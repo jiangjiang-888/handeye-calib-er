@@ -1,7 +1,9 @@
 # 基于ROS的手眼标定程序包
 ## 概览
 - 包含基础标定程序包，提供多组机器臂工具坐标和Marker坐标即可完成标定
-- Marker基于ArTookie实现
+- 包含JAKA机械臂标定程序
+- 包含AUBO机械臂标定程序
+- 本程序在`ros kinetic`平台测试通过
 
 >本程序包目前仅针对眼在手上的标定，通过输入两组以上的机械臂姿态信息(x,y,z,rx,ry,rz)和装在机械手上的相机所识别的标志物的姿态信息，经过程序计算可输出，机械臂末端和相机之间的坐标变换矩阵。
 
@@ -73,7 +75,7 @@ graph LR
 待更新......
 
 ### 4、使用系统ArUco获取标定板位姿
-- online:https://chev.me/arucogen/
+- 在线生成标定板:https://chev.me/arucogen/
 
 ### 5、使用ArTookit获取标定板位姿
 待更新......
@@ -89,12 +91,14 @@ Melodic：
 ```
 sudo apt-get install ros-melodic-usb-cam
 ```
-#### 
+#### 修改launch文件
+进入目录：
 ```
 roscd usb_cam
 cd launch
 sudo gedit usb_cam-test.launch 
 ```
+目前主要修改device和width两个参数，可以使用`ls /dev/video*`查看系统视频设备。
 ```
 <launch>
   <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
@@ -113,24 +117,30 @@ sudo gedit usb_cam-test.launch
   </node>
 </launch>
 ```
-
+#### 启动
 ```
-
+roslaunch usb_cam usb_cam-test.launch
 ```
 
 #### 使用ROS进行相机标定
+使用ROS自带的标定程序进行标定。
+
+> 标定完成后点击Save可以保存标定所用的图片和参数矩阵。在终端里会输出标定产生的压缩包，默认放在`/tmp`目录下。
+
 ```
 rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=/usb_cam/image_raw camera:=/usb_cam
 ```
 
-SAVE
+使用参数，可以在usb_cam的launch文件中增加以下参数，重新启动usb_cam节点，即可使用该标定参数。
 
 ```
 <param name="camera_info_url" type="string" value="file:///home/dev/.ros/camera_info/ost.yaml"/>
 ```
 
 ## 版本日志
-### V1.0
+-  V1.5
+添加配合jaka机械臂进行手眼标定程序。
+- V1.0
 完成基础标定程序包，可以通过文件输出位姿进行，输出标定结果。并进行校验。
 
 ## 参考
