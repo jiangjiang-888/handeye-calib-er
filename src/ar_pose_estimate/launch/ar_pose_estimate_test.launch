@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<launch>
+<!--param name="/ar_pose/data_path" value="$(find ar_pose)/data/mapping_data.yaml"/-->
+<!--param name="/ar_pose/laser_markers_path" value="$(find ar_pose)/data/laser_markers.yaml"/-->
+<!--node pkg="ar_pose" name="ar_pose_control" type="ar_pose_control" output="screen"/-->
+<!--node pkg="ar_pose" name="ar_pose" type="ar_pose" output="screen"/-->
+<node pkg="ar_pose_estimate" name="ar_pose_estimate" type="ar_pose_estimate" output="screen"/>
+<param name="/ar_pose_estimate/camera_param" value="$(find ar_pose_estimate)/Data/camera_para_6.dat"/>
+<param name="/ar_pose_estimate/patt_file" value="$(find ar_pose_estimate)/Data/marker_6.patt"/>
+<param name="/ar_pose_estimate/patt_width" value="150.0"/>
+<param name="/ar_pose_estimate/video_conf" value="-dev=/dev/video2 -width=640 -height=480"/>
+<!--param name="/ar_pose_estimate/video_conf" value="-module=V4L2 -dev=/dev/video2"/-->
+
+<param name="/ar_pose_estimate/camera_in_base_x" value = "0.0"/>
+<param name="/ar_pose_estimate/camera_in_base_y" value = "0.0"/>
+<param name="/ar_pose_estimate/camera_in_base_z" value = "0.0"/>
+<param name="/ar_pose_estimate/camera_in_base_roll" value = "0.0"/>
+<param name="/ar_pose_estimate/camera_in_base_pitch" value = "0.0"/>
+<param name="/ar_pose_estimate/camera_in_base_yaw" value = "0.0"/>
+
+<param name="/ar_pose_estimate/target_in_base_x" value = "0.0"/>
+<param name="/ar_pose_estimate/target_in_base_y" value = "0.0"/>
+<param name="/ar_pose_estimate/target_in_base_z" value = "0.0"/>
+<param name="/ar_pose_estimate/target_in_base_roll" value = "0.0"/>
+<param name="/ar_pose_estimate/target_in_base_pitch" value = "0.0"/>
+<param name="/ar_pose_estimate/target_in_base_yaw" value = "0.0"/>
+
+<param name="/ar_pose_estimate/camera_in_marker_x" value="0.0"/>
+<param name="/ar_pose_estimate/camera_in_marker_y" value="0.0"/>
+<param name="/ar_pose_estimate/camera_in_marker_z" value="0.0"/>
+<param name="/ar_pose_estimate/camera_in_marker_roll" value="0.0"/>
+<param name="/ar_pose_estimate/camera_in_marker_pitch" value="0.0"/>
+<param name="/ar_pose_estimate/camera_in_marker_yaw" value="0.0"/>
+
+<param name="/ar_pose_estimate/marker_in_base_x" value="0.11"/>
+<param name="/ar_pose_estimate/marker_in_base_y" value="0.40"/>
+<param name="/ar_pose_estimate/marker_in_base_z" value="0.0"/>
+<param name="/ar_pose_estimate/marker_in_base_roll" value="0.0"/>
+<param name="/ar_pose_estimate/marker_in_base_pitch" value="0.0"/>
+<param name="/ar_pose_estimate/marker_in_base_yaw" value="0.0"/>
+
+<param name="/ar_pose_estimate/record_target_pose" value="true"/>
+<param name="/ar_pose_estimate/save_file_path" value="$(find ar_pose_estimate)/Data/target_in_marker.txt"/>
+
+<param name="/ar_pose_estimate/calibrate_camera_pose_mode" value="true"/>
+
+<!--node pkg="simpleLite" name="simpleLite" type="simpleLite" output="screen" /-->
+</launch>
