@@ -4,11 +4,12 @@
 #include "comuniate/client.h"
 #include "sensor_msgs/JointState.h"
 #include "geometry_msgs/Pose.h"
+#include "tf/transform_datatypes.h"
 using std::endl;
 
 void connect(TcpClientPtr tcpClient)
 {
-    tcpClient->setIp("10.55.16.253");
+    tcpClient->setIp("10.55.17.17");
     tcpClient->setPort(10000);
     if (tcpClient->setup())
         ROS_INFO_STREAM("connect tcp server success");
@@ -64,15 +65,11 @@ Json::Value recvData(TcpClientPtr tcpclient)
     {
         ROS_WARN("position parse error.");
     }
-    // Json::Value pos = root["joint_actual_position"];
     return root;
 }
 
 double radu(double angl)
 {
-    // int z = (int) angl;
-    // z = z%180;
-    // angl = angl-(int)angl +z;
     return angl/180*3.1415926;
 }
 
@@ -87,8 +84,9 @@ int main(int argc, char **argv)
     connect(tcpClient);
     while (ros::ok())
     {
-        Json::Value root = recvData(tcpClient)["joint_actual_position"];
-        Json::Value root = recvData(tcpClient)["joint_actual_position"];
+        Json::Value root = recvData(tcpClient);
+        Json::Value pos = recvData(tcpClient)["joint_actual_position"];
+        Json::Value acl_pos = recvData(tcpClient)["actual_position"];
         if(pos.size()>0){
             sensor_msgs::JointState joint_state;
             joint_state.header.stamp = ros::Time::now();
@@ -104,6 +102,20 @@ int main(int argc, char **argv)
                 radu(pos[5].asDouble())
                 };
             joint_publisher.publish(joint_state);
+        }
+
+        if(acl_pos.size()>0)
+        {
+            geometry_msgs::Pose pose;
+            pose.position.x = acl_pos[0].asDouble()/1000;
+            pose.position.y = acl_pos[1].asDouble()/1000;
+            pose.position.z = acl_pos[2].asDouble()/1000;
+            geometry_msgs::Quaternion q = tf::createQuaternionMsgFromRollPitchYaw(acl_pos[3].asDouble(),acl_pos[4].asDouble(),acl_pos[5].asDouble());
+            pose.orientation.x = q.x;
+            pose.orientation.y = q.y;
+            pose.orientation.z = q.z;
+            pose.orientation.w = q.w;
+            jaka_pose_publisher.publish(pose);
         }
       
         rate.sleep();

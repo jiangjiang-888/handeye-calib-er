@@ -73,7 +73,7 @@ graph LR
 待更新......
 
 ### 4、使用系统ArUco获取标定板位姿
-待更新......
+- online:https://chev.me/arucogen/
 
 ### 5、使用ArTookit获取标定板位姿
 待更新......
@@ -89,8 +89,45 @@ Melodic：
 ```
 sudo apt-get install ros-melodic-usb-cam
 ```
+#### 
+```
+roscd usb_cam
+cd launch
+sudo gedit usb_cam-test.launch 
+```
+```
+<launch>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <!-- modify the video device to your device -->
+    <param name="video_device" value="/dev/video2" />
+    <!-- modify the size of your device -->
+    <param name="image_width" value="1280" />
+    <param name="image_height" value="720" />
+    <param name="pixel_format" value="yuyv" />
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap"/>
+  </node>
+  <node name="image_view" pkg="image_view" type="image_view" respawn="false" ou$
+    <remap from="image" to="/usb_cam/image_raw"/>
+    <param name="autosize" value="true" />
+  </node>
+</launch>
+```
+
+```
+
+```
+
 #### 使用ROS进行相机标定
-待更新......
+```
+rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=/usb_cam/image_raw camera:=/usb_cam
+```
+
+SAVE
+
+```
+<param name="camera_info_url" type="string" value="file:///home/dev/.ros/camera_info/ost.yaml"/>
+```
 
 ## 版本日志
 ### V1.0
