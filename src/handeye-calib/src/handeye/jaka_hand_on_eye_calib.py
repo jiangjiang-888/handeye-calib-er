@@ -3,7 +3,7 @@
 import rospy
 import transforms3d as tfs
 from geometry_msgs.msg import Pose
-# from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped
 import math
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 real_jaka_pose = None
@@ -19,7 +19,7 @@ def jaka_callback(pose):
 def camera_callback(pose):
     global real_camera_pose
     # rospy.loginfo(pose)
-    real_camera_pose = pose
+    real_camera_pose = pose.pose
 
 def get_pose_from_ros(pose):
     eulor = tfs.euler.quat2euler((pose.orientation.w,pose.orientation.x,pose.orientation.y,pose.orientation.z))
@@ -30,7 +30,7 @@ def get_pose_from_ros(pose):
 def get_csv_from_sample(samples):
     data = ""
     for d in samples:
-        data += str("hand,"+str(get_pose_from_ros(d['robot']))[1:-1]+"\n")
+        # data += str("hand,"+str(get_pose_from_ros(d['robot']))[1:-1]+"\n")
         data += str("eye,"+str(get_pose_from_ros(d['optical']))[1:-1]+"\n")
     return data
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     rospy.loginfo("Get topic from param server: jaka_pose_topic:"+str(jaka_pose_topic)+" camera_pose_topic:"+str(camera_pose_topic))
 
     rospy.Subscriber(jaka_pose_topic, Pose, jaka_callback)
-    rospy.Subscriber(camera_pose_topic, Pose, camera_callback)
+    rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback)
 
     samples = []
     # rospy.spin()
