@@ -110,7 +110,7 @@ int main(int argc, char **argv)
             pose.position.x = acl_pos[0].asDouble()/1000;
             pose.position.y = acl_pos[1].asDouble()/1000;
             pose.position.z = acl_pos[2].asDouble()/1000;
-            geometry_msgs::Quaternion q = tf::createQuaternionMsgFromRollPitchYaw(acl_pos[3].asDouble(),acl_pos[4].asDouble(),acl_pos[5].asDouble());
+            geometry_msgs::Quaternion q = tf::createQuaternionMsgFromRollPitchYaw(acl_pos[3].asDouble()*3.1415926/180,acl_pos[4].asDouble()/180.0*3.1415926,acl_pos[5].asDouble()*3.1415926/180);
             pose.orientation.x = q.x;
             pose.orientation.y = q.y;
             pose.orientation.z = q.z;

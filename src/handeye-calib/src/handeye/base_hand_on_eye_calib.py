@@ -73,10 +73,7 @@ if __name__ == '__main__':
         rospy.loginfo("The Camera To Hand Matrix\n"+str(rmat))
         rospy.loginfo("The Camera To Hand X,Y,Z:"+str(
             rmat[0:3, 3:4].T)+" \tRX,RY,RZ:"+str(tfs.euler.mat2euler(rmat[0:3, 0:3])))
-
-        test_sample[0][0]*rmat*test_sample[0][1]
-        temp = np.dot(test_sample[0][0], rmat)
-        temp = np.dot(temp, test_sample[0][1])
-        rospy.loginfo("The CheckBoard1 in the base is:\n" +
-                      str(temp)+"\nXYZ:"+str(temp[0:3, 3:4].T))
-        rospy.spin()
+        for i in range(len(test_sample)):
+            temp = np.dot(test_sample[i][0], rmat)
+            temp = np.dot(temp, test_sample[i][1])
+            rospy.loginfo(str(temp[0:3, 3:4].T))
