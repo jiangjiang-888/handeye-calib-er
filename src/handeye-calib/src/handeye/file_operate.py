@@ -2,7 +2,8 @@
 # coding: utf-8
 import csv
 import numpy as np
-
+import os
+import sys
 
 def read_handeye_data(path):
     hand = []
@@ -19,4 +20,12 @@ def read_handeye_data(path):
                     eye.append(float(d))
     return np.asarray(hand, dtype=float, order=None), np.asarray(eye, dtype=float, order=None)
 
+def save_file(path,data):
+    if str(path).startswith("~"):
+        path = path.replace("~",str(os.getenv("HOME")))
+    with open(path,'w') as wf:
+        wf.write(str(data))
+        wf.close()
+        
 
+    

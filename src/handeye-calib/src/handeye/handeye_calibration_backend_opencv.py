@@ -18,12 +18,12 @@ class HandeyeCalibrationBackendOpenCV(object):
 
     @staticmethod
     def _msg_to_opencv(transform_msg):
-        cmt = transform_msg.translation
+        cmt = transform_msg.position
         tr = np.array((cmt.x, cmt.y, cmt.z))
-        cmq = transform_msg.rotation
+        cmq = transform_msg.orientation
         rot = tfs.quaternions.quat2mat((cmq.w, cmq.x, cmq.y, cmq.z))
         return rot, tr
-
+    
     @staticmethod
     def _get_opencv_samples(samples):
         """
@@ -48,7 +48,7 @@ class HandeyeCalibrationBackendOpenCV(object):
 
         return (hand_base_rot, hand_base_tr), (marker_camera_rot, marker_camera_tr)
 
-    def compute_calibration(self, handeye_parameters, samples, algorithm=None):
+    def compute_calibration(self, samples, algorithm=None):
         """
         Computes the calibration through the OpenCV library and returns it.
 
@@ -57,7 +57,7 @@ class HandeyeCalibrationBackendOpenCV(object):
         if algorithm is None:
             algorithm = 'Tsai-Lenz'
 
-        loginfo('OpenCV backend calibrating with algorithm {}'.format(algorithm))
+        # loginfo('OpenCV backend calibrating with algorithm {}'.format(algorithm))
 
         if len(samples) < HandeyeCalibrationBackendOpenCV.MIN_SAMPLES:
             logwarn("{} more samples needed! Not computing the calibration".format(
@@ -72,7 +72,7 @@ class HandeyeCalibrationBackendOpenCV(object):
             logerr("Different numbers of hand-world and camera-marker samples!")
             raise AssertionError
 
-        loginfo("Computing from %g poses..." % len(samples))
+        # loginfo("Computing from %g poses..." % len(samples))
 
         method = HandeyeCalibrationBackendOpenCV.AVAILABLE_ALGORITHMS[algorithm]
 
@@ -80,11 +80,19 @@ class HandeyeCalibrationBackendOpenCV(object):
                                                                marker_camera_tr, method=method)
         result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
 
-        loginfo("Computed calibration: {}".format(str(result)))
         (hcqw, hcqx, hcqy, hcqz) = [float(i) for i in tfs.quaternions.mat2quat(hand_camera_rot)]
         (hctx, hcty, hctz) = [float(i) for i in hand_camera_tr]
 
-        result_tuple = ((hctx, hcty, hctz), (hcqx, hcqy, hcqz, hcqw))
+        final_pose = []
+        for i in range(len(samples)):
+            # (hand_world_rot, hand_world_tr), (marker_camera_rot, marker_camera_tr)
+            # result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
+            pose1 = tfs.affines.compose(np.squeeze(hand_world_tr[i]), hand_world_rot[i], [1, 1, 1])
+            pose2 = tfs.affines.compose(np.squeeze(marker_camera_tr[i]), marker_camera_rot[i], [1, 1, 1])
+            temp = np.dot(pose1,result)
+            temp = np.dot(temp,pose2)
+            final_pose.append(temp[0:3,3:4])
 
-
+        # , (hcqx, hcqy, hcqz, hcqw)),final_pose
+        result_tuple = ((hctx, hcty, hctz))
         return result_tuple
