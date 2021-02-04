@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # coding=utf-8
-import time
+import time,sys,os
+sys.path.append(os.path.dirname(__file__))
 import libpy3auboi5
 import logging
 from logging.handlers import RotatingFileHandler

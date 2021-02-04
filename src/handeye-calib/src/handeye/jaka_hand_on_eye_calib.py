@@ -56,9 +56,9 @@ if __name__ == '__main__':
         if command == "r" :
             samples.append({"robot":real_jaka_pose,"optical":real_camera_pose})
             print "current sample size:"+str(len(samples))
-            if len(samples)>2:
-                temp_sample = HandEyeCal.compute_calibration(samples)
-                print temp_sample
+            # if len(samples)>2:
+            #     temp_sample = HandEyeCal.compute_calibration(samples)
+            #     print temp_sample
             
         elif command=='c' :
             print "calculate"
