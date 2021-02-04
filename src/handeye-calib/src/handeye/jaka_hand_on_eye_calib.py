@@ -3,7 +3,7 @@
 import rospy
 import transforms3d as tfs
 from geometry_msgs.msg import Pose
-from geometry_msgs.msg import PoseStamped
+# from geometry_msgs.msg import PoseStamped
 import math
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 real_jaka_pose = None
