@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 from robotcontrol import * 
 import os.path,sys,json
 import math

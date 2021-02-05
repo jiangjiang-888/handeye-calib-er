@@ -1,5 +1,10 @@
-from robotcontrol import * 
+#!/usr/bin/env python
+# coding: utf-8
 import os.path,sys,json
+env=os.path.dirname(__file__)+"sdk/"
+os.path.join(env)
+print(env)
+from robotcontrol import * 
 
 def save_file(path,data):
     if str(path).startswith("~"):
