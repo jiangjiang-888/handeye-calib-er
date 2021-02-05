@@ -9,6 +9,7 @@ import transforms3d as tfs
 import math
 import file_operate
 import rospy
+import json
 
 
 def msg_to_opencv(x, y, z, rx, ry, rz):
@@ -39,8 +40,13 @@ def compute_calibration(samples):
     (hand_world_rot, hand_world_tr), (marker_camera_rot, marker_camera_tr) = samples
     if len(hand_world_rot) != len(marker_camera_rot):
         logerr("Different numbers of hand-world and camera-marker samples!")
-        raise AssertionError
-    method = cv.CALIB_HAND_EYE_TSAI
+        raise AssertionErro
+        # 'Tsai-Lenz': cv2.CALIB_HAND_EYE_TSAI,
+        # 'Park': cv2.CALIB_HAND_EYE_PARK,
+        # 'Horaud': cv2.CALIB_HAND_EYE_HORAUD,
+        # 'Andreff': cv2.CALIB_HAND_EYE_ANDREFF,
+        # 'Daniilidis': cv2.CALIB_HAND_EYE_DANIILIDIS,
+    method = cv.CALIB_HAND_EYE_PARK
     hand_camera_rot, hand_camera_tr = cv.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
                                                           marker_camera_tr, method=method)
     result = tfs.affines.compose(np.squeeze(
@@ -73,10 +79,13 @@ if __name__ == '__main__':
         sample = get_sample(cal=cal, tool=tool)
         rmat = compute_calibration(sample)
         test_sample = get_test_sample(cal, tool)
-        rospy.loginfo("The Camera To Hand Matrix\n"+str(rmat))
+        # rospy.loginfo("The Camera To Hand Matrix\n"+str(json.dumps({"data":np.array(rmat)})))
+        
         rospy.loginfo("The Camera To Hand X,Y,Z:"+str(
             rmat[0:3, 3:4].T)+" \tRX,RY,RZ:"+str(tfs.euler.mat2euler(rmat[0:3, 0:3])))
         for i in range(len(test_sample)):
             temp = np.dot(test_sample[i][0], rmat)
             temp = np.dot(temp, test_sample[i][1])
+            rot = tfs.euler.mat2euler(temp[0:3,0:3])
             rospy.loginfo(str(temp[0:3, 3:4].T))
+            rospy.loginfo(str(math.degrees(rot[0]))+","+str(math.degrees(rot[1]))+","+str(math.degrees(rot[2])))

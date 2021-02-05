@@ -20,7 +20,7 @@ def camera_callback(pose):
 
 def get_pose_from_ros(pose):
     eulor = tfs.euler.quat2euler((pose.orientation.w,pose.orientation.x,pose.orientation.y,pose.orientation.z))
-    real_pose = [pose.position.x,pose.position.y,pose.position.z-0.511,eulor[0]/math.pi*180,eulor[1]/math.pi*180,eulor[2]/math.pi*180]
+    real_pose = [pose.position.x,pose.position.y,pose.position.z,eulor[0]/math.pi*180,eulor[1]/math.pi*180,eulor[2]/math.pi*180]
     return real_pose
 
 def get_csv_from_sample(samples):

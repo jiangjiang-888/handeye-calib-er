@@ -20,7 +20,8 @@ def main():
         port = 8899
         result = robot.connect(ip, port)
 
-        tool =  { "pos": (0.019554, 0.008029, 0.259355), "ori": (1.0, 0.0, 0.0, 0.0) }
+        tool =  { "pos": (-0.073136, -0.007195, 0.092327), "ori": (1.0, 0.0, 0.0, 0.0) }
+  
 
         if result != RobotErrorType.RobotError_SUCC:
             logger.info("connect server{0}:{1} failed.".format(ip, port))
@@ -33,7 +34,7 @@ def main():
                 command = input("")
                 if command == "r":
                     r=robot.get_current_waypoint()
-                    # r = robot.base_to_base_additional_tool(r['pos'],r['ori'],tool)
+                    r = robot.base_to_base_additional_tool(r['pos'],r['ori'],tool)
                     data =  json.dumps(r) + "\n"
                     sys.stdout.write(data)
                     save_file("./data.txt",data)
