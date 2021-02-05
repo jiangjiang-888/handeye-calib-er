@@ -1,5 +1,5 @@
 from robotcontrol import * 
-import os.path 
+import os.path,sys,json
 
 def save_file(path,data):
     if str(path).startswith("~"):
@@ -9,37 +9,38 @@ def save_file(path,data):
         wf.close()
         
 def main():
-    logger_init()
+    # logger_init()
     Auboi5Robot.initialize()
 
     robot = Auboi5Robot()
     handle = robot.create_context()
     try:
-        ip = '192.168.1.100'
+        ip = '10.55.17.126'
         port = 8899
         result = robot.connect(ip, port)
-        robot.enable_robot_event()
+
+        tool =  { "pos": (0.019554, 0.008029, 0.259355), "ori": (1.0, 0.0, 0.0, 0.0) }
+
         if result != RobotErrorType.RobotError_SUCC:
             logger.info("connect server{0}:{1} failed.".format(ip, port))
         else:
             data = ""
             while True:
-                command = "r"
+                # sys.stdout.write("input command:\n")
+                # sys.stdout.flush()
+                # command = sys.stdin.readline().strip()
+                command = input("")
                 if command == "r":
                     r=robot.get_current_waypoint()
-                    data += str(str(r['pos'])[:-1]+","+str(r['ori'])[1:])[1:-1]+"\n"
+                    # r = robot.base_to_base_additional_tool(r['pos'],r['ori'],tool)
+                    data =  json.dumps(r) + "\n"
+                    sys.stdout.write(data)
                     save_file("./data.txt",data)
-                    print(data)
-                    break
-                if command == "q":
-                    break;
-                if command == "s":
-                    break
-
+                    # break
+                sys.stdout.flush()    
             robot.disconnect()
-
-    except RobotError as e:
-        logger.error("robot Event:{0}".format(e))
+    except Exception as e:
+        pass
     finally:
         if robot.connected:
             robot.disconnect()
