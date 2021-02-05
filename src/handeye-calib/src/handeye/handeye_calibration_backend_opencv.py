@@ -97,5 +97,5 @@ class HandeyeCalibrationBackendOpenCV(object):
             final_pose.append(temp[0:3,3:4])
 
         # , (hcqx, hcqy, hcqz, hcqw)),final_pose
-        result_tuple = ((hctx, hcty, hctz))
+        result_tuple = ((hctx, hcty, hctz)),(hcqx, hcqy, hcqz, hcqw)
         return result_tuple

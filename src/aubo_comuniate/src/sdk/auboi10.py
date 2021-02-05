@@ -15,7 +15,8 @@ def main():
     robot = Auboi5Robot()
     handle = robot.create_context()
     try:
-        ip = '10.55.17.126'
+        ip = '10.55.17.38'
+        # ip = '10.55.17.126'
         port = 8899
         result = robot.connect(ip, port)
 
