@@ -3,13 +3,14 @@
 #include "jsoncpp/json/json.h"
 #include "comuniate/client.h"
 #include "sensor_msgs/JointState.h"
-#include "geometry_msgs/Pose.h"
 #include "tf/transform_datatypes.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseStamp"
 using std::endl;
 
-void connect(TcpClientPtr tcpClient)
+void connect(TcpClientPtr tcpClient,string addr)
 {
-    tcpClient->setIp("10.55.17.17");
+    tcpClient->setIp(addr);
     tcpClient->setPort(10000);
     if (tcpClient->setup())
         ROS_INFO_STREAM("connect tcp server success");

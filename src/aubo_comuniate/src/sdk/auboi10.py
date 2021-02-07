@@ -33,16 +33,13 @@ def main():
         else:
             data = ""
             while True:
-                # sys.stdout.write("input command:\n")
-                # sys.stdout.flush()
-                # command = sys.stdin.readline().strip()
                 command = input("")
                 if command == "r":
                     r=robot.get_current_waypoint()
                     r = robot.base_to_base_additional_tool(r['pos'],r['ori'],tool)
                     data =  json.dumps(r) + "\n"
                     sys.stdout.write(data)
-                    save_file("./data.txt",data)
+                    # save_file("./data.txt",data)
                     # break
                 sys.stdout.flush()    
             robot.disconnect()

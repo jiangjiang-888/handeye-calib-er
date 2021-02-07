@@ -34,14 +34,14 @@ graph LR
     cd handeye-calib
     catkin_make or catkin build
     ```
-2. 修改base_hand_on_eye_calib.launch文件中，base_handeye_data参数为从机械臂位姿和标定板位姿所在的配置文件所在的绝对目录。
+2. 修改base_hand_on_eye_calib.launch文件中，base_handeye_data参数为从机械臂位姿和标定板位姿所在的配置文件所在的绝对目录,可以使用launch文件的`find`。
     ```
     <launch>
-    <!-- you can see the example /home/sangxin/code/ros/work/handeye-calib/src/handeye-calib/config/base_hand_on_eye_test_data.csv  -->
-    <arg  name="base_handeye_data"   default="The file path of handeye data." />
-    <node pkg="handeye-calib" type="base_hand_on_eye_calib.py"      name="base_hand_on_eye_calib" output="screen" >
-         <param name="base_handeye_data" value="$(arg base_handeye_data)" />
-    </node>
+      <!-- <arg   name="base_handeye_data"   default="The file path of handeye data." /> -->
+      <arg   name="base_handeye_data"   default="$(find handeye-calib)/config/base_hand_on_eye_test_data.csv" />
+      <node pkg="handeye-calib" type="base_hand_on_eye_calib.py" name="base_hand_on_eye_calib" output="screen" >
+          <param name="base_handeye_data" value="$(arg base_handeye_data)" />
+      </node>
     </launch>
     ```
 3. 运行程序
@@ -72,9 +72,35 @@ graph LR
     ```
 
 ### 2、结合JAKA机械臂使用
-待更新......
+- jaka标定文件会自己订阅两个话题的数据，一个是机械臂的位姿话题和相机中标定物的位姿话题。
+- 机械臂的话题可以通过运行本仓库中的jaka_comuniate功能包中的jaka_comuniate.launch获得。
+- 相机中标记物的姿态数据，可以参考本文第四节使用ArUco获取标定板位姿
 
-### 3、结合AUBO机械臂使用
+#### 配置jaka机械臂ip地址信息
+主要配置参数有`jaka_pose_topic`、`camera_pose_topic`。分别代表jaka机械臂的通信地址和，相机中标记物的位姿态。
+  ```
+  <launch>
+    <!-- The arm tool Pose Topic,Use ros geometry_msgs::Pose-->
+    <arg   name="jaka_pose_topic"   default="/jaka_pose" />
+    <!-- The arm marker in camera Pose Topic,Use ros geometry_msgs::Pose-->
+    <arg   name="camera_pose_topic"   default="/ar_pose_estimate/marker_to_camera" />
+
+    
+    <node pkg="handeye-calib" type="jaka_hand_on_eye_calib.py" name="jaka_hand_on_eye_calib" output="screen" >
+         <param name="jaka_pose_topic" value="$(arg jaka_pose_topic)" />
+         <param name="camera_pose_topic" value="$(arg camera_pose_topic)" />
+    </node>
+    
+</launch>
+  ```
+
+#### 配置话题数据
+
+
+#### 运行节点
+
+
+### 3、结合iAUBO机械臂使用
 待更新......
 
 ### 4、使用系统ArUco获取标定板位姿
