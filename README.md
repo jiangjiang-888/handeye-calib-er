@@ -3,7 +3,7 @@
 - 包含基础标定程序包，提供多组机器臂工具坐标和Marker坐标即可完成标定
 - 包含JAKA机械臂标定程序
 - 包含AUBO机械臂标定程序
-- 本程序在`ros kinetic`平台测试通过
+- 本程序在`ros kinetic melodic`平台测试通过
 
 >本程序包目前仅针对眼在手上的标定，通过输入两组以上的机械臂姿态信息(x,y,z,rx,ry,rz)和装在机械手上的相机所识别的标志物的姿态信息，经过程序计算可输出，机械臂末端和相机之间的坐标变换矩阵。
 
@@ -25,6 +25,9 @@ graph LR
 > 我们使用一般读到的`（X,Y,Z,RX,RY,RZ）`六个数据表示
 
 #### 安装测试
+
+
+
 1. 下载编译
     ```
     git clone http://10.55.16.230/sangxin/handeye-calib.git
@@ -77,8 +80,6 @@ graph LR
 ### 4、使用系统ArUco获取标定板位姿
 - 在线生成标定板:https://chev.me/arucogen/
 
-### 5、使用ArTookit获取标定板位姿
-待更新......
 
 ### 其他
 #### 使用ROS usb_cam驱动相机：
@@ -148,3 +149,4 @@ rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=
 - opencv-calibHandEye
 - jaka&&aubo
 - aruco_ros
+- [csdn](https://blog.csdn.net/sandy_wym_/article/details/83996479)
