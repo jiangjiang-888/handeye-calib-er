@@ -5,8 +5,9 @@
 #include "sensor_msgs/JointState.h"
 #include "tf/transform_datatypes.h"
 #include "geometry_msgs/Pose.h"
-#include "geometry_msgs/PoseStamp"
+#include "geometry_msgs/PoseStamped.h"
 using std::endl;
+using namespace std;
 
 void connect(TcpClientPtr tcpClient,string addr)
 {
@@ -19,7 +20,7 @@ void connect(TcpClientPtr tcpClient,string addr)
 }
 
 
-Json::Value recvData(TcpClientPtr tcpclient)
+Json::Value recvData(TcpClientPtr tcpclient,string ip)
 {
     int recv_num;
     int total_num = 0;
@@ -44,7 +45,7 @@ Json::Value recvData(TcpClientPtr tcpclient)
         else
         {
             tcpclient->closeSocket();
-            connect(tcpclient);
+            connect(tcpclient,ip);
         }
     }
 
@@ -82,12 +83,20 @@ int main(int argc, char **argv)
     ros::Publisher jaka_pose_publisher = nh.advertise<geometry_msgs::Pose>("jaka_pose", 1);
     ros::Rate rate = ros::Rate(10);
     TcpClientPtr tcpClient = std::make_shared<TcpClient>();
-    connect(tcpClient);
+
+    std::string ip;
+    ros::param::get("/jaka_comuniate/jaka_host", ip);
+    ROS_INFO_STREAM("Load Jaka Ip Param:"<<ip);
+    if (ip == ""){
+        ROS_ERROR("Can't get ip addr ,Please check param");
+    }
+
+    connect(tcpClient,ip);
     while (ros::ok())
     {
-        Json::Value root = recvData(tcpClient);
-        Json::Value pos = recvData(tcpClient)["joint_actual_position"];
-        Json::Value acl_pos = recvData(tcpClient)["actual_position"];
+        Json::Value root = recvData(tcpClient,ip);
+        Json::Value pos =root["joint_actual_position"];
+        Json::Value acl_pos = root["actual_position"];
         if(pos.size()>0){
             sensor_msgs::JointState joint_state;
             joint_state.header.stamp = ros::Time::now();

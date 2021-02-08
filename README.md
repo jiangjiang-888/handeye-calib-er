@@ -77,7 +77,7 @@ graph LR
 - 相机中标记物的姿态数据，可以参考本文第四节使用ArUco获取标定板位姿
 
 #### 配置jaka机械臂ip地址信息
-主要配置参数有`jaka_pose_topic`、`camera_pose_topic`。分别代表jaka机械臂的通信地址和，相机中标记物的位姿态。
+主要配置参数有`jaka_pose_topic`、`camera_pose_topic`。分别代表jaka机械臂的通信地址和，相机中标记物的位姿话题。
   ```
   <launch>
     <!-- The arm tool Pose Topic,Use ros geometry_msgs::Pose-->
@@ -94,7 +94,8 @@ graph LR
 </launch>
   ```
 
-#### 配置话题数据
+#### 配置运行jaka通信节点
+
 
 
 #### 运行节点
