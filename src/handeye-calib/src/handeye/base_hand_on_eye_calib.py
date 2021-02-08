@@ -10,9 +10,13 @@ import math
 import file_operate
 import rospy
 import json
+from tabulate import tabulate
 
 
 def msg_to_opencv(x, y, z, rx, ry, rz):
+    """
+
+    """
     tr = np.array((x, y, z))
     rot = tfs.euler.euler2mat(math.radians(
         rx), math.radians(ry), math.radians(rz))
@@ -20,6 +24,9 @@ def msg_to_opencv(x, y, z, rx, ry, rz):
 
 
 def get_sample(cal, tool):
+    """
+
+    """
     hand_base_rot = []
     hand_base_tr = []
     marker_camera_rot = []
@@ -41,11 +48,7 @@ def compute_calibration(samples):
     if len(hand_world_rot) != len(marker_camera_rot):
         logerr("Different numbers of hand-world and camera-marker samples!")
         raise AssertionErro
-        # 'Tsai-Lenz': cv2.CALIB_HAND_EYE_TSAI,
-        # 'Park': cv2.CALIB_HAND_EYE_PARK,
-        # 'Horaud': cv2.CALIB_HAND_EYE_HORAUD,
-        # 'Andreff': cv2.CALIB_HAND_EYE_ANDREFF,
-        # 'Daniilidis': cv2.CALIB_HAND_EYE_DANIILIDIS,
+
     method = cv.CALIB_HAND_EYE_PARK
     hand_camera_rot, hand_camera_tr = cv.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
                                                           marker_camera_tr, method=method)
@@ -79,8 +82,6 @@ if __name__ == '__main__':
         sample = get_sample(cal=cal, tool=tool)
         rmat = compute_calibration(sample)
         test_sample = get_test_sample(cal, tool)
-        # rospy.loginfo("The Camera To Hand Matrix\n"+str(json.dumps({"data":np.array(rmat)})))
-        
         rospy.loginfo("The Camera To Hand X,Y,Z:"+str(
             rmat[0:3, 3:4].T)+" \tRX,RY,RZ:"+str(tfs.euler.mat2euler(rmat[0:3, 0:3])))
         for i in range(len(test_sample)):

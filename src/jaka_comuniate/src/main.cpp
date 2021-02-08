@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         ROS_ERROR("Can't get ip addr ,Please check param");
     }
     connect(tcpClient,ip);
-    long fram_id =0;
+    long frame_id =0;
 
     while (ros::ok())
     {
@@ -118,8 +118,8 @@ int main(int argc, char **argv)
         if(acl_pos.size()>0)
         {
             geometry_msgs::PoseStamped pose;
-            fram_id++;
-            pose.header.frame_id = fram_id;
+            frame_id++;
+            pose.header.frame_id = std::to_string(frame_id);
             pose.header.stamp = ros::Time::now();
             pose.pose.position.x = acl_pos[0].asDouble()/1000;
             pose.pose.position.y = acl_pos[1].asDouble()/1000;

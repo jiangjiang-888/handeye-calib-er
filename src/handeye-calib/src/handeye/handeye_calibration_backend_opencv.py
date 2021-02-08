@@ -5,7 +5,7 @@ sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import numpy as np
 import transforms3d as tfs
 from rospy import logerr, logwarn, loginfo
-
+import math
 
 class HandeyeCalibrationBackendOpenCV(object):
     MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
@@ -15,7 +15,7 @@ class HandeyeCalibrationBackendOpenCV(object):
         'Tsai-Lenz': cv2.CALIB_HAND_EYE_TSAI,
         'Park': cv2.CALIB_HAND_EYE_PARK,
         'Horaud': cv2.CALIB_HAND_EYE_HORAUD,
-        'Andreff': cv2.CALIB_HAND_EYE_ANDREFF,
+       # 'Andreff': cv2.CALIB_HAND_EYE_ANDREFF,
         'Daniilidis': cv2.CALIB_HAND_EYE_DANIILIDIS,
     }
 
@@ -83,19 +83,20 @@ class HandeyeCalibrationBackendOpenCV(object):
                                                                marker_camera_tr, method=method)
         result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
 
-        (hcqw, hcqx, hcqy, hcqz) = [float(i) for i in tfs.quaternions.mat2quat(hand_camera_rot)]
+        # (hcqw, hcqx, hcqy, hcqz) = [float(i) for i in tfs.euler.mat2euler(hand_camera_rot)]
+        (rx, ry, rz) = [math.degrees(float(i)) for i in tfs.euler.mat2euler(hand_camera_rot)]
         (hctx, hcty, hctz) = [float(i) for i in hand_camera_tr]
 
-        final_pose = []
-        for i in range(len(samples)):
-            # (hand_world_rot, hand_world_tr), (marker_camera_rot, marker_camera_tr)
-            # result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
-            pose1 = tfs.affines.compose(np.squeeze(hand_world_tr[i]), hand_world_rot[i], [1, 1, 1])
-            pose2 = tfs.affines.compose(np.squeeze(marker_camera_tr[i]), marker_camera_rot[i], [1, 1, 1])
-            temp = np.dot(pose1,result)
-            temp = np.dot(temp,pose2)
-            final_pose.append(temp[0:3,3:4])
+        # final_pose = []
+        # for i in range(len(samples)):
+        #     # (hand_world_rot, hand_world_tr), (marker_camera_rot, marker_camera_tr)
+        #     # result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
+        #     pose1 = tfs.affines.compose(np.squeeze(hand_world_tr[i]), hand_world_rot[i], [1, 1, 1])
+        #     pose2 = tfs.affines.compose(np.squeeze(marker_camera_tr[i]), marker_camera_rot[i], [1, 1, 1])
+        #     temp = np.dot(pose1,result)
+        #     temp = np.dot(temp,pose2)
+        #     final_pose.append(temp[0:3,3:4])
 
         # , (hcqx, hcqy, hcqz, hcqw)),final_pose
-        result_tuple = ((hctx, hcty, hctz)),(hcqx, hcqy, hcqz, hcqw)
+        result_tuple = (hctx, hcty, hctz,rx,ry,rz)
         return result_tuple

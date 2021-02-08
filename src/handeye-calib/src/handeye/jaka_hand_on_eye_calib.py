@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-# coding: utf-8
+#coding:utf-8
 import rospy
 import transforms3d as tfs
 from geometry_msgs.msg import PoseStamped
-import math
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
+import math
+import time
+import file_operate
+from tabulate import tabulate
 
 
 real_jaka_pose = None
@@ -25,7 +28,7 @@ def get_pose_from_ros(pose):
     eulor = tfs.euler.quat2euler(
         (pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z))
     real_pose = [pose.position.x, pose.position.y, pose.position.z,
-                 eulor[0]/math.pi*180, eulor[1]/math.pi*180, eulor[2]/math.pi*180]
+                 math.degrees(eulor[0]), math.degrees(eulor[1]), math.degrees(eulor[2])]
     return real_pose
 
 
@@ -52,6 +55,15 @@ if __name__ == '__main__':
     rospy.Subscriber(jaka_pose_topic, PoseStamped, jaka_callback)
     rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback)
 
+    while not rospy.is_shutdown():
+        time.sleep(1)
+        if real_jaka_pose==None:
+            rospy.loginfo('Waiting jaka pose topic data '+ jaka_pose_topic)
+        elif real_camera_pose==None:
+            rospy.loginfo('Waiting camera pose topic data '+ camera_pose_topic)
+        else:
+            break
+
     samples = []
     while not rospy.is_shutdown():
         command = str(raw_input("input r to record,c to calculate,q to quit:"))
@@ -63,7 +75,16 @@ if __name__ == '__main__':
                 temp_sample = HandEyeCal.compute_calibration(samples)
                 print temp_sample
         elif command == 'c':
-            print "calculate"
+            if len(samples) > 2:
+                # table = [["Sun",600,1980],["Earth",6371,573.6],["Moon",1737,73.5],["Mars",3390,641.85]]
+                # print(tabulate(table,,showindex="true",headers="keys"))
+                data = [['algoritihms','x','y','z','rx','ry','rz']]
+                for algoram in HandEyeCal.AVAILABLE_ALGORITHMS:
+                    pose = HandEyeCal.compute_calibration(samples,algorithm=algoram)
+                    data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5]])
+                print tabulate(data,headers="firstrow")
+            else:
+                print "sample size "+ str(len(samples)) +" not enough"
         elif command == 'q':
             break
         elif command == 'p':

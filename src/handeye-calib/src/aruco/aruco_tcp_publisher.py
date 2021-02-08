@@ -58,7 +58,7 @@ def callback(pose):
 
 
 if __name__=='__main__':
-    rospy.init_node("tcp_publisher", anonymous=False)
+    rospy.init_node("aruco_tcp_publisher", anonymous=False)
     rospy.Subscriber("/aruco_single/pose", PoseStamped, callback)
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
