@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#coding:utf-8
+# coding:utf-8
 import rospy
 import transforms3d as tfs
 from geometry_msgs.msg import PoseStamped
@@ -40,53 +40,88 @@ def get_csv_from_sample(samples):
     return data
 
 
-if __name__ == '__main__':
-    rospy.init_node("jaka_hand_on_eye_calib", anonymous=False)
+def cauculate(samples,hand_calib):
+    esti_pose = {}
+    save_data = ""
+    if len(samples) > 2:
+        data =  [['algoritihms','x','y','z','rx','ry','rz',"distance"]]
+        for algoram in hand_calib.AVAILABLE_ALGORITHMS:
+            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
+            data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            esti_pose[algoram] = final_pose
 
-    HandEyeCal = HandeyeCalibrationBackendOpenCV()
+        print  "\n"+tabulate(data,headers="firstrow") + "\n"
+        save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
+        test_result =  hand_calib._test_data(data[1:])
+        data = [['name','x','y','z','rx','ry','rz',"distance"]]
+        for d in test_result:
+            data.append(d)
+        print tabulate(data,headers="firstrow")
+        save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
+
+        for algoram in hand_calib.AVAILABLE_ALGORITHMS:
+            print tabulate(esti_pose[algoram],headers="firstrow")
+            save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")
+    return save_data
+
+
+def save(result_path,save_data):
+        if result_path is not None:
+            file_operate.save_file(result_path,save_data)
+            rospy.loginfo("Save result to  "+str(result_path))
+        print get_csv_from_sample(samples)
+
+
+
+def check_data():
+    while not rospy.is_shutdown():
+        time.sleep(1)
+        if real_jaka_pose == None:
+            rospy.loginfo('Waiting jaka pose topic data ' + jaka_pose_topic)
+        elif real_camera_pose == None:
+            rospy.loginfo('Waiting camera pose topic data ' +
+                          camera_pose_topic)
+        else:
+            break
+
+
+
+def init():
     jaka_pose_topic = rospy.get_param(
         "/jaka_hand_on_eye_calib/jaka_pose_topic")
     camera_pose_topic = rospy.get_param(
         "/jaka_hand_on_eye_calib/camera_pose_topic")
     rospy.loginfo("Get topic from param server: jaka_pose_topic:" +
                   str(jaka_pose_topic)+" camera_pose_topic:"+str(camera_pose_topic))
-
     rospy.Subscriber(jaka_pose_topic, PoseStamped, jaka_callback)
     rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback)
 
-    while not rospy.is_shutdown():
-        time.sleep(1)
-        if real_jaka_pose==None:
-            rospy.loginfo('Waiting jaka pose topic data '+ jaka_pose_topic)
-        elif real_camera_pose==None:
-            rospy.loginfo('Waiting camera pose topic data '+ camera_pose_topic)
-        else:
-            break
 
+
+if __name__ == '__main__':
+    rospy.init_node("jaka_hand_on_eye_calib", anonymous=False)
+    hand_calib = HandeyeCalibrationBackendOpenCV()
+
+    check_data()
     samples = []
+
     while not rospy.is_shutdown():
-        command = str(raw_input("input r to record,c to calculate,q to quit:"))
+        command = str(raw_input("input:  r     record,c    calculate,s     save,q    quit:"))
+
         if command == "r":
-            samples.append(
-                {"robot": real_jaka_pose, "optical": real_camera_pose})
+            samples.append( {"robot": real_jaka_pose, "optical": real_camera_pose})
             print "current sample size:"+str(len(samples))
             if len(samples) > 2:
-                temp_sample = HandEyeCal.compute_calibration(samples)
+                temp_sample = hand_calib.compute_calibration(samples)
                 print temp_sample
+
         elif command == 'c':
-            if len(samples) > 2:
-                # table = [["Sun",600,1980],["Earth",6371,573.6],["Moon",1737,73.5],["Mars",3390,641.85]]
-                # print(tabulate(table,,showindex="true",headers="keys"))
-                data = [['algoritihms','x','y','z','rx','ry','rz']]
-                for algoram in HandEyeCal.AVAILABLE_ALGORITHMS:
-                    pose = HandEyeCal.compute_calibration(samples,algorithm=algoram)
-                    data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5]])
-                print tabulate(data,headers="firstrow")
-            else:
-                print "sample size "+ str(len(samples)) +" not enough"
+            cauculate(samples,hand_calib)
+
         elif command == 'q':
             break
-        elif command == 'p':
-            data = ""
-            print get_csv_from_sample(samples)
+
+        elif command == 's':
+            save()
+        

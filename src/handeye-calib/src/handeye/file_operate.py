@@ -23,6 +23,10 @@ def read_handeye_data(path):
 def save_file(path,data):
     if str(path).startswith("~"):
         path = path.replace("~",str(os.getenv("HOME")))
+
+    if  not os.path.exists(path[:path.rfind("/")]):
+        os.mkdir(path[:path.rfind("/")])
+
     with open(path,'w') as wf:
         wf.write(str(data))
         wf.close()
