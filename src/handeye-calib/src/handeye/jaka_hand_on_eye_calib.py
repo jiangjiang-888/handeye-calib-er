@@ -16,6 +16,7 @@ real_camera_pose = None
 
 def jaka_callback(pose):
     global real_jaka_pose
+    # rospy.loginfo(pose.pose)
     real_jaka_pose = pose.pose
 
 
@@ -40,7 +41,7 @@ def get_csv_from_sample(samples):
     return data
 
 
-def cauculate(samples,hand_calib):
+def calculate(samples,hand_calib):
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
@@ -63,48 +64,40 @@ def cauculate(samples,hand_calib):
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             print tabulate(esti_pose[algoram],headers="firstrow")
             save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")
+    else:
+        print 'sample size not enough'
     return save_data
 
 
-def save(result_path,save_data):
-        if result_path is not None:
-            file_operate.save_file(result_path,save_data)
-            rospy.loginfo("Save result to  "+str(result_path))
-        print get_csv_from_sample(samples)
+def save(save_data):
+    result_path = "/tmp/jaka_handeye_result.txt"
+    if result_path is not None:
+        file_operate.save_file(result_path,save_data)
+        rospy.loginfo("Save result to  "+str(result_path))
 
 
-
-def check_data():
-    while not rospy.is_shutdown():
-        time.sleep(1)
-        if real_jaka_pose == None:
-            rospy.loginfo('Waiting jaka pose topic data ' + jaka_pose_topic)
-        elif real_camera_pose == None:
-            rospy.loginfo('Waiting camera pose topic data ' +
-                          camera_pose_topic)
-        else:
-            break
-
-
-
-def init():
+if __name__ == '__main__':
+    rospy.init_node("jaka_hand_on_eye_calib", anonymous=False)
+    hand_calib = HandeyeCalibrationBackendOpenCV()
+    samples = []
     jaka_pose_topic = rospy.get_param(
         "/jaka_hand_on_eye_calib/jaka_pose_topic")
     camera_pose_topic = rospy.get_param(
         "/jaka_hand_on_eye_calib/camera_pose_topic")
     rospy.loginfo("Get topic from param server: jaka_pose_topic:" +
                   str(jaka_pose_topic)+" camera_pose_topic:"+str(camera_pose_topic))
-    rospy.Subscriber(jaka_pose_topic, PoseStamped, jaka_callback)
-    rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback)
+    rospy.Subscriber(jaka_pose_topic, PoseStamped, jaka_callback,queue_size=10)
+    rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback,queue_size=10)
 
+    while not rospy.is_shutdown():
+        time.sleep(1)
+        if real_jaka_pose == None:
+            rospy.loginfo('Waiting jaka pose topic data ...')
+        elif real_camera_pose == None:
+            rospy.loginfo('Waiting camera pose topic data ...')
+        else:
+            break
 
-
-if __name__ == '__main__':
-    rospy.init_node("jaka_hand_on_eye_calib", anonymous=False)
-    hand_calib = HandeyeCalibrationBackendOpenCV()
-
-    check_data()
-    samples = []
 
     while not rospy.is_shutdown():
         command = str(raw_input("input:  r     record,c    calculate,s     save,q    quit:"))
@@ -113,15 +106,18 @@ if __name__ == '__main__':
             samples.append( {"robot": real_jaka_pose, "optical": real_camera_pose})
             print "current sample size:"+str(len(samples))
             if len(samples) > 2:
-                temp_sample = hand_calib.compute_calibration(samples)
+                temp_sample,final_pose = hand_calib.compute_calibration(samples)
                 print temp_sample
 
         elif command == 'c':
-            cauculate(samples,hand_calib)
+            calculate(samples,hand_calib)
 
         elif command == 'q':
             break
 
+        elif command == 'p':
+            print get_csv_from_sample(samples)
+
         elif command == 's':
-            save()
+            save(calculate(samples,hand_calib)+"\norigin data :\n\n"+get_csv_from_sample(samples))
         
