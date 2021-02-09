@@ -54,8 +54,7 @@ if __name__ == '__main__':
             pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
             data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
-
-        print  "\n"+tabulate(data,headers="firstrow") + "\n"
+        print  str("\n"+tabulate(data,headers="firstrow") + "\n")
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
