@@ -262,6 +262,8 @@ roslaunch handeye-calib aruco_start_usb_cam.launch
 
 ## 其他
 ### 1.、使用ROS usb_cam驱动相机：
+- 目前暂不支持网络相机，后面将考虑纳入该相机驱动。
+  
 #### a.安装usbcam
 Kinetic：
 ```
@@ -333,6 +335,8 @@ rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=
 ```
 
 ## 版本日志
+- V2.1
+  添加USBCAM，CALIBRATE内容。
 
 - V2.1
   添加Aruco 启动文件。
