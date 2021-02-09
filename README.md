@@ -397,7 +397,6 @@ rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=
 ## 贡献
 
 - [@sangxin](sangxin@infore.com) InforeRobot
-- [@duanxh](duanxh@infore.com) InforeRobot
 
 ## 参考
 - easy-handeye
