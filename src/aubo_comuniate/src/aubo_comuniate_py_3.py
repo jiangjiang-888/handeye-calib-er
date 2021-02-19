@@ -8,14 +8,10 @@ from sdk.robotcontrol import *
 Auboi5Robot.initialize()
 robot = Auboi5Robot()
 handle = robot.create_context()
-ip = '10.55.130.223'
-port = 8899
-result = robot.connect(ip, port)
+
 
 tool =  { "pos": (-0.060354, 0.000651, 0.089300), "ori": (1.0, 0.0, 0.0, 0.0) }
 
-if result != RobotErrorType.RobotError_SUCC:
-	logger.info("connect server{0}:{1} failed.".format(ip, port))
 
 def get_data():
 	global Auboi5Robot
@@ -38,10 +34,16 @@ def main():
     rospy.init_node("aubo_communiate", anonymous=False)
     pub = rospy.Publisher("aubo_pose",PoseStamped,queue_size=1)
     rate = rospy.Rate(5)
+    ip = rospy.get_param("/aubo_comuniate/aubo_host")
+    port = 8899
+    result = robot.connect(ip, port)
+    if result != RobotErrorType.RobotError_SUCC:
+    	logger.info("connect server{0}:{1} failed.".format(ip, port))
+
     while not rospy.is_shutdown():
         data = get_data()
         data = json.loads(data)
-        print(data)
+        # print(data)
         pose = PoseStamped()
         pose.header.stamp = rospy.get_rostime()
         pose.pose.position.x,pose.pose.position.y,pose.pose.position.z = data['pos']
