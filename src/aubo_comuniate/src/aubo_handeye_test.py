@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# coding: utf-8
 from sdk.robotcontrol import *
 import time
 import os
@@ -57,7 +59,6 @@ def test_robot():
             #取箱位姿信息
             move_fetch = vision.connectScanner('box')
             print("pose_num",move_fetch['num'])
-            
             if move_fetch['num']==0 :
                 print("pose_num error !")
             else:
