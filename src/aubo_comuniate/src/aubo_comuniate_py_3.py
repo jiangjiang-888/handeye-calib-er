@@ -43,7 +43,6 @@ def main():
     while not rospy.is_shutdown():
         data = get_data()
         data = json.loads(data)
-        # print(data)
         pose = PoseStamped()
         pose.header.stamp = rospy.get_rostime()
         pose.pose.position.x,pose.pose.position.y,pose.pose.position.z = data['pos']

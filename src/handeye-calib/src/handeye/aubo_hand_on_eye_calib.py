@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # coding:utf-8
 import rospy
 import transforms3d as tfs
@@ -50,7 +50,7 @@ def calculate(samples,hand_calib):
             data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
 
-        print  "\n"+tabulate(data,headers="firstrow") + "\n"
+        print "\n"+tabulate(data,headers="firstrow") + "\n"
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
