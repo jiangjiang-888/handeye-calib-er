@@ -5,25 +5,14 @@ import numpy as np
 import transforms3d as tfs
 from rospy import logerr, logwarn, loginfo
 import math
+import sys,os
 
-
-def is_correct_cv():
-    import cv2
-    try:
-        cv2.CALIB_HAND_EYE_TSAI
-        return True
-    except Exception as e:
-        return False
-
-
-# is_correct_cv()
-if is_correct_cv():
-    import cv2
-else:
+if os.path.exists('/opt/ros/kinetic/lib/python2.7/dist-packages'):
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
     import cv2
     sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
-
+else:
+    import cv2
 
 class HandeyeCalibrationBackendOpenCV(object):
     MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
@@ -70,7 +59,6 @@ class HandeyeCalibrationBackendOpenCV(object):
                 var_result.append(np.var(temp))
                 std_result.append(np.std(temp))
         return mean_result,var_result,std_result
-        
 
     @staticmethod
     def _get_opencv_samples(samples):

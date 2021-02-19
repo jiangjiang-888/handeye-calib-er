@@ -1,27 +1,16 @@
-from robotcontrol import *
-#from capture3d import *
+from sdk.robotcontrol import *
 import time
-import libpyauboi5
-import logging
-from logging.handlers import RotatingFileHandler
-from multiprocessing import Process, Queue
 import os
 import math 
-
-import capture3d
 import numpy as np
-from numpy import dot
-from numpy import mat
-from numpy.linalg import inv
-from pyquaternion import Quaternion
-import bbb
+import vision
+import calculate
 
 def run(robot,pose):
-    tool =  { "pos": (-0.073136, -0.007195, 0.092327), "ori": (1.0, 0.0, 0.0, 0.0) }
-    
+    tool =  { "pos": (-0.060354, 0.000651, 0.089300), "ori": (1.0, 0.0, 0.0, 0.0) }
     r = robot.get_current_waypoint()
     r = robot.base_to_base_additional_tool( r['pos'], r['ori'],tool)
-    r1 = bbb.getTarget(
+    r1 = calculate.getTarget(
         [
             r['pos'],
             r['ori']
@@ -29,38 +18,16 @@ def run(robot,pose):
         [
             pose['pos'],
             pose['ori']
-            # [-0.0829281285405,0.0183543693274, 0.552563965321],
-            # [0.562188117937,-0.526761407173,0.429122187468,-0.471509372321]
         ]
     )
-    pos,rpy = bbb.get_cartesian_Target( robot, r1)
+    pos,rpy = calculate.get_cartesian_Target( robot, r1)
 
-    # print(pos,rpy)
-
-    robot.set_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_01, 1)
-    user_io_status = robot.get_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_01)
-                
-    robot.set_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_00, 0)
-
-    robot.move_to_target_in_cartesian(pos,rpy)
-    time.sleep(0.5)
-
-    pos[2] += 0.9
-
+    pos[2] += 0.20
     robot.move_to_target_in_cartesian(pos,rpy)
 
-    pos[2] -= 0.9
+    pos[2] -= 0.20
     robot.move_to_target_in_cartesian(pos,rpy)
 
-    robot.set_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_01, 0)
-    user_io_status = robot.get_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_01)
-                
-    robot.set_board_io_status(RobotIOType.User_DO, RobotUserIoName.user_do_00, 1)
-
-    pos[2] += 0.9
-    robot.move_to_target_in_cartesian(pos,rpy)
-
-    
 
 def test_robot():
     # 初始化logger
@@ -75,7 +42,7 @@ def test_robot():
     handle = robot.create_context()
     try:
         # 链接服务器
-        ip = '10.55.17.38'
+        ip = '10.55.130.223'
         port = 8899
         result = robot.connect(ip, port)
         if result != RobotErrorType.RobotError_SUCC:
@@ -88,13 +55,13 @@ def test_robot():
             # 设置关节最大加速度
             robot.set_joint_maxvelc((0.1, 0.1, 0.1, 0.1, 0.1, 0.1))
             #取箱位姿信息
-            # move_fetch = capture3d.connectScanner('box')
-            move_fetch = {'msg_type': 'location_rsp', 'obj_type': 'box', 'num': 1, 'pose_list': [{'x': -108.289635, 'y': -63.525009, 'z': 866.706482, 'rx': 0.0, 'ry': 0.0, 'rz': 87.137596}]}
+            move_fetch = vision.connectScanner('box')
             print("pose_num",move_fetch['num'])
+            
             if move_fetch['num']==0 :
                 print("pose_num error !")
             else:
-                xyz=[move_fetch['pose_list'][0]['x']/1000,move_fetch['pose_list'][0]['y']/1000,move_fetch['pose_list'][0]['z']/1000]
+                xyz=[move_fetch['pose_list'][0]['x'],move_fetch['pose_list'][0]['y'],move_fetch['pose_list'][0]['z']]
                 print("xyz",xyz)
                 rx,ry,rz= math.radians(move_fetch['pose_list'][0]['rx']), math.radians(move_fetch['pose_list'][0]['ry']), math.radians(move_fetch['pose_list'][0]['rz'])
                 quater=robot.rpy_to_quaternion([rx,ry,rz])

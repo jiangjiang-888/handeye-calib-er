@@ -64,6 +64,7 @@ if __name__ == '__main__':
         print tabulate(data,headers="firstrow")
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
+        
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             print tabulate(esti_pose[algoram],headers="firstrow")
             save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")

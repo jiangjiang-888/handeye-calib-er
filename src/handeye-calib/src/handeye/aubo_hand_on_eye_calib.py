@@ -1,27 +1,36 @@
 #!/usr/bin/env python
-# coding: utf-8
+# coding:utf-8
 import rospy
 import transforms3d as tfs
-from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 import math
+import time
+import file_operate
+from tabulate import tabulate
+
 
 real_aubo_pose = None
 real_camera_pose = None
 
+
 def aubo_callback(pose):
     global real_aubo_pose
-    real_aubo_pose = pose
+    real_aubo_pose = pose.pose
+
 
 def camera_callback(pose):
     global real_camera_pose
     real_camera_pose = pose.pose
 
+
 def get_pose_from_ros(pose):
-    eulor = tfs.euler.quat2euler((pose.orientation.w,pose.orientation.x,pose.orientation.y,pose.orientation.z))
-    real_pose = [pose.position.x,pose.position.y,pose.position.z,eulor[0]/math.pi*180,eulor[1]/math.pi*180,eulor[2]/math.pi*180]
+    eulor = tfs.euler.quat2euler(
+        (pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z))
+    real_pose = [pose.position.x, pose.position.y, pose.position.z,
+                 math.degrees(eulor[0]), math.degrees(eulor[1]), math.degrees(eulor[2])]
     return real_pose
+
 
 def get_csv_from_sample(samples):
     data = ""
@@ -30,41 +39,83 @@ def get_csv_from_sample(samples):
         data += str("eye,"+str(get_pose_from_ros(d['optical']))[1:-1]+"\n")
     return data
 
-def distance(pose1,pose2):
-    pass
+
+def calculate(samples,hand_calib):
+    esti_pose = {}
+    save_data = ""
+    if len(samples) > 2:
+        data =  [['algoritihms','x','y','z','rx','ry','rz',"distance"]]
+        for algoram in hand_calib.AVAILABLE_ALGORITHMS:
+            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
+            data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            esti_pose[algoram] = final_pose
+
+        print  "\n"+tabulate(data,headers="firstrow") + "\n"
+        save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
+
+        test_result =  hand_calib._test_data(data[1:])
+        data = [['name','x','y','z','rx','ry','rz',"distance"]]
+        for d in test_result:
+            data.append(d)
+        print tabulate(data,headers="firstrow")
+        save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
+
+        for algoram in hand_calib.AVAILABLE_ALGORITHMS:
+            print tabulate(esti_pose[algoram],headers="firstrow")
+            save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")
+    else:
+        print 'sample size not enough'
+    return save_data
+
+
+def save(save_data):
+    result_path = "/tmp/aubo_handeye_result.txt"
+    if result_path is not None:
+        file_operate.save_file(result_path,save_data)
+        rospy.loginfo("Save result to  "+str(result_path))
+
 
 if __name__ == '__main__':
     rospy.init_node("aubo_hand_on_eye_calib", anonymous=False)
-    
-    HandEyeCal = HandeyeCalibrationBackendOpenCV()
-
+    hand_calib = HandeyeCalibrationBackendOpenCV()
+    samples = []
     aubo_pose_topic = rospy.get_param("/aubo_hand_on_eye_calib/aubo_pose_topic")
     camera_pose_topic = rospy.get_param("/aubo_hand_on_eye_calib/camera_pose_topic")
     rospy.loginfo("Get topic from param server: aubo_pose_topic:"+str(aubo_pose_topic)+" camera_pose_topic:"+str(camera_pose_topic))
+   
 
-    rospy.Subscriber(aubo_pose_topic, Pose, aubo_callback)
-    rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback)
+    rospy.Subscriber(aubo_pose_topic, PoseStamped, aubo_callback,queue_size=10)
+    rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback,queue_size=10)
 
-    samples = []
-    # rospy.spin()
     while not rospy.is_shutdown():
-        command = str(raw_input("input r to record,c to calculate,q to quit:"))
-        if command == "r" :
-            samples.append({"robot":real_aubo_pose,"optical":real_camera_pose})
+        time.sleep(1)
+        if real_aubo_pose == None:
+            rospy.loginfo('Waiting aubo pose topic data ...')
+        elif real_camera_pose == None:
+            rospy.loginfo('Waiting camera pose topic data ...')
+        else:
+            break
+
+
+    while not rospy.is_shutdown():
+        command = str(raw_input("input:  r     record,c    calculate,s     save,q    quit:"))
+
+        if command == "r":
+            samples.append( {"robot": real_aubo_pose, "optical": real_camera_pose})
             print "current sample size:"+str(len(samples))
-            if len(samples)>2:
-                temp_sample = HandEyeCal.compute_calibration(samples)
+            if len(samples) > 2:
+                temp_sample,final_pose = hand_calib.compute_calibration(samples)
                 print temp_sample
-            
-        elif command=='c' :
-            print "calculate"
-        elif command=='l' :
-            print samples
-        elif command=='q' :
-            break;
-        elif command=='s' :
-            data = ""
+
+        elif command == 'c':
+            calculate(samples,hand_calib)
+
+        elif command == 'q':
+            break
+
+        elif command == 'p':
             print get_csv_from_sample(samples)
-            # temp_sample = HandEyeCal.compute_calibration(samples)
-            # data = data+get_csv_from_sample(samples)+"\n"
-            # data = data+ temp_sample
+
+        elif command == 's':
+            save(calculate(samples,hand_calib)+"\norigin data :\n\n"+get_csv_from_sample(samples))
+        
