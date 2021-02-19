@@ -41,7 +41,6 @@
     </node>
 
     <node name="aruco_tcp_publisher" pkg="handeye-calib" type="aruco_tcp_publisher.py" output="screen">
-        <param name="corner_refinement"  value="$(arg corner_refinement)" />
     </node>
 
 </launch>
