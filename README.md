@@ -288,15 +288,38 @@ roslaunch aubo_comuniate aubo_comuniate.launch
 #### 3.运行标定板识别程序
 
   请参考第四节（4.使用系统ArUco获取标定板位姿）
+#### 4.配置标定所需话题
+主要配置参数有`aubo_pose_topic`、`camera_pose_topic`。分别代表aubo机械臂的通信话题和相机中标记物的位姿话题。
+> 通过这两个话题我们就可以拿到机械臂和标志物在相机中的位姿信息.
+```shell
+cd src/handeye-calib/launch
+修改 aubo_hand_on_eye_calib.launch
+```
+```xml
+<launch>
+    <!-- The arm tool Pose Topic,Use ros geometry_msgs::Pose-->
+    <arg   name="aubo_pose_topic"   default="/aubo_pose" />
 
-#### 4.运行标定程序
+    <!-- The arm marker in camera Pose Topic,Use ros geometry_msgs::Pose-->
+    <arg   name="camera_pose_topic"   default="/aruco_single/pose" />
+
+    <!-- <arg   name="camera_pose_topic"   default="/ar_pose_estimate/marker_to_camera" /> -->
+    <node pkg="handeye-calib" type="aubo_hand_on_eye_calib.py" name="aubo_hand_on_eye_calib" output="screen" >
+         <param name="aubo_pose_topic" value="$(arg aubo_pose_topic)" />
+         <param name="camera_pose_topic" value="$(arg camera_pose_topic)" />
+    </node>
+
+</launch>
+```
+
+#### 5.运行标定程序
 
 ```
  source devel/setup.bash
  roslaunch handeye-calib aubo_hand_on_eye_calib.launch
 ```
 
-#### 5.开始标定
+#### 6.开始标定
 
 程序运行是会对话题数据进行检测，先检测是否收到机械臂数据，如果没有会一直等待。
 当检测到已经接收到数据之后，就会出现，命令提示。
@@ -321,11 +344,11 @@ input:  r     record,c    calculate,s     save,q    quit:
 拖拽机械臂或者用视校器移动机械臂，但要保证相机事业中依然可以看到标定板。
 输入`r`记录一组手眼数据。
 
-#### 6.生成参数
+#### 7.生成参数
 
 完成标定之后输入`s`即可进行保存，将保存标定结果数据和计算所使用的数据。
 
-##### 标定结果正确与否的测试
+#### 8.标定结果正确与否的测试
 
 观察数据计算结果的标准差大小。
    每次计算之后，程序都会输出不同算法下标定结果点的平均数、方差、标准差三项数值。

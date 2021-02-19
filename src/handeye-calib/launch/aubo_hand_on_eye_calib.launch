@@ -10,6 +10,5 @@
          <param name="aubo_pose_topic" value="$(arg aubo_pose_topic)" />
          <param name="camera_pose_topic" value="$(arg camera_pose_topic)" />
     </node>
-    
-    <!-- <include   > -->
+
 </launch>
