@@ -5,7 +5,7 @@ import transforms3d as tfs
 from geometry_msgs.msg import PoseStamped
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 import math
-import time
+import time,datetime
 import file_operate
 from tabulate import tabulate
 
@@ -69,7 +69,7 @@ def calculate(samples,hand_calib):
 
 
 def save(save_data):
-    result_path = "/tmp/aubo_handeye_result.txt"
+    result_path = "/tmp/aubo_handeye_result_"+str(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))+".txt"
     if result_path is not None:
         file_operate.save_file(result_path,save_data)
         rospy.loginfo("Save result to  "+str(result_path))
