@@ -11,8 +11,14 @@ if os.path.exists('/opt/ros/kinetic/lib/python2.7/dist-packages'):
     sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
     import cv2
     sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
+elif  os.path.exists('/opt/ros/melodic/lib/python2.7/dist-packages'):
+    sys.path.remove('/opt/ros/melodic/lib/python2.7/dist-packages')
+    import cv2
+    sys.path.append('/opt/ros/melodic/lib/python2.7/dist-packages')
 else:
     import cv2
+
+
 
 class HandeyeCalibrationBackendOpenCV(object):
     MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
