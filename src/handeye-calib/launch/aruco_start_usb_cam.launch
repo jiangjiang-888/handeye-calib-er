@@ -40,7 +40,7 @@
         <param name="autosize" value="true" />
     </node>
 
-    <node name="aruco_tcp_publisher" pkg="handeye-calib" type="aruco_tcp_publisher.py" output="screen">
-    </node>
+    <!-- <node name="aruco_tcp_publisher" pkg="handeye-calib" type="aruco_tcp_publisher.py" output="screen">
+    </node> -->
 
 </launch>
