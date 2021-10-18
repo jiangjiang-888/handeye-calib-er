@@ -546,9 +546,6 @@ rosrun camera_calibration cameracalibrator.py --size 10x7 --square 0.015 image:=
 - V1.0
   完成基础标定程序包，可以通过文件输出位姿进行，输出标定结果。并进行校验。
 
-## 贡献
-
-- [@sangxin](sangxin@infore.com) InforeRobot
 
 ## 参考
 - easy-handeye
