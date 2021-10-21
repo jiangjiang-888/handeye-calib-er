@@ -30,7 +30,7 @@ graph LR
 
 1. 下载编译
     ```
-    git clone http://10.55.16.230/sangxin/handeye-calib.git
+    git clone https://gitee.com/ohhuo/handeye-calib.git
     cd handeye-calib
     catkin_make or catkin build
     ```
