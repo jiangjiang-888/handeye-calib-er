@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 import sys
 import numpy as np
-import transforms3d as tfs
 import math
 import file_operate
 import rospy
 import json
+import transforms3d as tfs
 from tabulate import tabulate
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 
@@ -26,16 +26,16 @@ def eular_to_msg(x, y, z, rx, ry, rz,inverse=False):
     transform cvs msg to ros type Pose 
     """
     if not inverse:
-	rot = tfs.euler.euler2quat(math.radians(rx), math.radians(ry), math.radians(rz))
-	return {"position":{"x":x,"y":y,"z":z},"orientation":{"w":rot[0],"x":rot[1],"y":rot[2],"z":rot[3]}} 
+        rot = tfs.euler.euler2quat(math.radians(rx),math.radians(ry),math.radians(rz))
+        return {"position":{"x":x,"y":y,"z":z},"orientation":{"w":rot[0],"x":rot[1],"y":rot[2],"z":rot[3]}} 
     else:
-	mat = get_matrix_eular_radu(x,y,z,rx, ry, rz)
-	mat = np.linalg.inv(mat)
-	print(mat)
- 	pos,rot = matrix_to_eular(mat)
-	print(rot)
-	rot = tfs.euler.euler2quat(math.radians(rot[0]), math.radians(rot[1]), math.radians(rot[2]))
-	return {"position":{"x":mat[0][3],"y":mat[1][3],"z":mat[2][3]},"orientation":{"w":rot[0],"x":rot[1],"y":rot[2],"z":rot[3]}} 
+        mat = get_matrix_eular_radu(x,y,z,rx, ry, rz)
+        mat = np.linalg.inv(mat)
+        print(mat)
+        pos,rot = matrix_to_eular(mat)
+        print(rot)
+        rot = tfs.euler.euler2quat(math.radians(rot[0]), math.radians(rot[1]), math.radians(rot[2]))
+        return {"position":{"x":mat[0][3],"y":mat[1][3],"z":mat[2][3]},"orientation":{"w":rot[0],"x":rot[1],"y":rot[2],"z":rot[3]}} 
 
 def get_samples(cal, tool):
     """
@@ -72,19 +72,19 @@ if __name__ == '__main__':
             pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
             data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
-        print  str("\n"+tabulate(data,headers="firstrow") + "\n")
+        print(str("\n"+tabulate(data,headers="firstrow") + "\n"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
         data = [['name','x','y','z','rx','ry','rz',"distance"]]
         for d in test_result:
             data.append(d)
-        print tabulate(data,headers="firstrow")
+        print(tabulate(data,headers="firstrow"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
-            print tabulate(esti_pose[algoram],headers="firstrow")
+            print(tabulate(esti_pose[algoram],headers="firstrow"))
             save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")
             
         if result_path is not None:

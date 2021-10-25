@@ -24,9 +24,6 @@
         <param name="corner_refinement"  value="$(arg corner_refinement)" />
     </node> 
 
-    <!-- <node name="aruco_tcp_publisher" pkg="handeye-calib" type="aruco_tcp_publisher.py" respawn="false" output="screen">
-    </node> -->
-
     <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
         <remap from="image" to="/aruco_single/result"/>
         <param name="autosize" value="true" />
