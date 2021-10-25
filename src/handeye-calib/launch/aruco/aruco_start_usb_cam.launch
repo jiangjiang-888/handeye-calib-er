@@ -1,6 +1,6 @@
 <launch>
     <arg name="camera_info_url"  default="file:///home/ros/.ros/camera_info/head_camera.yaml"/>
-    <arg name="video_device"     default="/dev/video2"/>
+    <arg name="video_device"     default="/dev/video0"/>
     <arg name="image_width"      default="640"/>
     <arg name="image_height"     default="480"/>
 
@@ -38,7 +38,5 @@
         <param name="autosize" value="true" />
     </node>
 
-    <!-- <node name="aruco_tcp_publisher" pkg="handeye-calib" type="aruco_tcp_publisher.py" output="screen">
-    </node> -->
 
 </launch>

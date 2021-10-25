@@ -43,7 +43,7 @@ def get_samples(cal, tool):
     """
     samples = []
     for i in range(0, tool.shape[0], 6):
-       optical = eular_to_msg(cal[i], cal[i+1], cal[i+2], cal[i+3], cal[i+4], cal[i+5],True)
+       optical = eular_to_msg(cal[i], cal[i+1], cal[i+2], cal[i+3], cal[i+4], cal[i+5],False)
        hand = eular_to_msg( tool[i], tool[i+1], tool[i+2], tool[i+3], tool[i+4], tool[i+5])
        samples.append({"robot": hand, "optical": optical})
     return samples
@@ -67,21 +67,21 @@ if __name__ == '__main__':
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
-        data =  [['algoritihms','x','y','z','rx','ry','rz',"distance"]]
+        data =  [['算法','x','y','z','rx','ry','rz',"距离"]]
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
-            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
-            data.append([algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram,eye_on_hand=False)
+            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
+        
         print(str("\n"+tabulate(data,headers="firstrow") + "\n"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
-        data = [['name','x','y','z','rx','ry','rz',"distance"]]
+        data = [['名字','x','y','z','rx','ry','rz',"距离"]]
         for d in test_result:
             data.append(d)
         print(tabulate(data,headers="firstrow"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
-
         
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             print(tabulate(esti_pose[algoram],headers="firstrow"))

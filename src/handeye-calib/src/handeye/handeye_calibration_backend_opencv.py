@@ -24,6 +24,21 @@ class HandeyeCalibrationBackendOpenCV(object):
     MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
     """Minimum samples required for a successful calibration."""
 
+
+    def __init__(self) -> None:
+        super().__init__()
+        print("======================================================")
+        print("          欢迎使用手眼标定程序，我是小鱼   ")
+        print("        学习机器人一定要关注公众号鱼香ROS      ")
+        print("         回复手眼标定可获得算法推导及实现      ")
+        print("------------------------------------------------------")
+        print("""            本程序中相关坐标系定义解析                 """)
+        print("""   base_link:机械臂基坐标系（一般在固定在机器人底座）         """)
+        print("""   end_link :机械臂末端坐标系（可在launch中配置）         """)
+        print("""   camera   :相机坐标系         """)
+        print("""   marker   :标定版所在坐标系         """)
+        print("======================================================")
+
     AVAILABLE_ALGORITHMS = {
         'Tsai-Lenz': cv2.CALIB_HAND_EYE_TSAI,
         'Park': cv2.CALIB_HAND_EYE_PARK,
@@ -34,6 +49,9 @@ class HandeyeCalibrationBackendOpenCV(object):
 
     @staticmethod
     def _msg_to_opencv(transform_msg):
+        """
+        小鱼：将ROS消息转换成opencv格式
+        """
         if isinstance(transform_msg, dict):
             cmt = transform_msg["position"]
             tr = np.array((cmt['x'], cmt['y'], cmt['z']))
@@ -51,6 +69,9 @@ class HandeyeCalibrationBackendOpenCV(object):
 
     @staticmethod
     def _test_data(data):
+        """
+        测试数据，求出平均值和方差，标准差
+        """
         mean_result = ['mean']
         var_result = ['var']
         std_result = ['std']
@@ -67,7 +88,7 @@ class HandeyeCalibrationBackendOpenCV(object):
         return mean_result,var_result,std_result
 
     @staticmethod
-    def _get_opencv_samples(samples):
+    def _get_opencv_samples(samples,eye_on_hand=True):
         """
         Returns the sample list as a rotation matrix and a translation vector.
         :rtype: (np.array, np.array)
@@ -81,6 +102,13 @@ class HandeyeCalibrationBackendOpenCV(object):
             camera_marker_msg = s['optical']
             (mcr, mct) = HandeyeCalibrationBackendOpenCV._msg_to_opencv(
                 camera_marker_msg)
+            # 眼在手外，手眼调换
+            if not eye_on_hand:
+                temp = tfs.affines.compose(np.squeeze(mct), mcr, [1, 1, 1])
+                temp = np.linalg.inv(temp)
+                mct = temp[0:3,3:4]
+                mcr = temp[0:3,0:3]
+
             marker_camera_rot.append(mcr)
             marker_camera_tr.append(mct)
 
@@ -96,7 +124,7 @@ class HandeyeCalibrationBackendOpenCV(object):
         return math.sqrt(x*x+y*y+z*z)
 
 
-    def compute_calibration(self, samples, algorithm=None):
+    def compute_calibration(self, samples, algorithm=None,eye_on_hand=True):
         """
         Computes the calibration through the OpenCV library and returns it.
 
@@ -111,7 +139,7 @@ class HandeyeCalibrationBackendOpenCV(object):
             return
 
         # Update data
-        opencv_samples = HandeyeCalibrationBackendOpenCV._get_opencv_samples(samples)
+        opencv_samples = HandeyeCalibrationBackendOpenCV._get_opencv_samples(samples,eye_on_hand)
         (hand_world_rot, hand_world_tr), (marker_camera_rot, marker_camera_tr) = opencv_samples
 
         if len(hand_world_rot) != len(marker_camera_rot):
@@ -121,20 +149,29 @@ class HandeyeCalibrationBackendOpenCV(object):
         method = HandeyeCalibrationBackendOpenCV.AVAILABLE_ALGORITHMS[algorithm]
         hand_camera_rot, hand_camera_tr = cv2.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
                                                                marker_camera_tr, method=method)
-        result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
 
+        # end_link->marker or end_link->camera
+        result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
         (rx, ry, rz) = [math.degrees(float(i)) for i in tfs.euler.mat2euler(hand_camera_rot)]
         (hctx, hcty, hctz) = [float(i) for i in hand_camera_tr]
         
-        final_pose = [[algorithm,'x','y','z','rx','ry','rz',"distance"]]
+        final_pose = [[algorithm,'x','y','z','rx','ry','rz',"距离"]]
         for i in range(len(samples)):
+            # base_link->end_link
             pose1 = tfs.affines.compose(np.squeeze(hand_world_tr[i]), hand_world_rot[i], [1, 1, 1])
+            # marker->camera  or camera->marker
             pose2 = tfs.affines.compose(np.squeeze(marker_camera_tr[i]), marker_camera_rot[i], [1, 1, 1])
+            # base_link->end_link->marker   or base_link->end_link->camera 
             temp = np.dot(pose1,result)
+            # base_link->end_link->marker->camera  or base_link->end_link->camera->marker
             temp = np.dot(temp,pose2)
             tr = temp[0:3,3:4].T[0]
             rot =tfs.euler.mat2euler(temp[0:3,0:3]) 
-            final_pose.append(["point"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
+            if eye_on_hand:
+                final_pose.append(["base_link->marker"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
+            else:
+                final_pose.append(["base_link->camera"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
+                
 
         test_result = HandeyeCalibrationBackendOpenCV._test_data(final_pose[1:])
         final_pose.append(test_result[0])

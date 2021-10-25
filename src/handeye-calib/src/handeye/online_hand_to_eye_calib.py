@@ -45,17 +45,17 @@ def calculate(samples,hand_calib):
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
-        data =  [['算法(end_link->camera)','x','y','z','rx','ry','rz',"distance"]]
+        data =  [['算法','x','y','z','rx','ry','rz',"距离"]]
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
-            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
-            data.append(["end_link->camera:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram,eye_on_hand=False)
+            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
 
         print ("\n"+tabulate(data,headers="firstrow") + "\n")
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
-        data = [['name','x','y','z','rx','ry','rz',"distance"]]
+        data = [['算法','x','y','z','rx','ry','rz',"距离"]]
         for d in test_result:
             data.append(d)
         print(tabulate(data,headers="firstrow"))
@@ -77,13 +77,13 @@ def save(save_data):
 
 
 if __name__ == '__main__':
-    rospy.init_node("online_hand_on_eye_calib", anonymous=False)
+    rospy.init_node("online_hand_to_eye_calib", anonymous=False)
     hand_calib = HandeyeCalibrationBackendOpenCV()
     samples = []
     online_pose_topic = rospy.get_param(
-        "/online_hand_on_eye_calib/arm_pose_topic")
+        "/online_hand_to_eye_calib/arm_pose_topic")
     camera_pose_topic = rospy.get_param(
-        "/online_hand_on_eye_calib/camera_pose_topic")
+        "/online_hand_to_eye_calib/camera_pose_topic")
     rospy.loginfo("手眼标定需要两个位置和姿态，一个是机械臂末端的位姿，将从话题%s中获取 ,另一个相机中标定版的位置姿态将从话题%s获取，所以请确保两个话题有数据" % (str(online_pose_topic),str(camera_pose_topic)))
     rospy.Subscriber(online_pose_topic, PoseStamped, online_callback,queue_size=10)
     rospy.Subscriber(camera_pose_topic, PoseStamped, camera_callback,queue_size=10)
