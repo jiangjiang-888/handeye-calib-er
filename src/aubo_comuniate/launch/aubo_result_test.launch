@@ -1,6 +1,0 @@
-<launch>
-
-    <include file="$(find handeye-calib)/launch/aruco_start_realsense_sdk.launch" />
-    
-
-</launch>
