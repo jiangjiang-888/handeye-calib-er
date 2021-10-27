@@ -8,3 +8,4 @@ logs/
 res/
 *.swp
 *.pyc
+__pycache__
