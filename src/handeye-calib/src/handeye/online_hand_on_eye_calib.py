@@ -41,21 +41,20 @@ def get_csv_from_sample(samples):
     return data
 
 
-def calculate(samples,hand_calib):
+def calculate(samples,hand_calib,eye_on_hand=False):
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
-        data =  [['算法(end_link->camera)','x','y','z','rx','ry','rz',"distance"]]
+        data =  [['算法(end_link->camera)','x','y','z','rx','ry','rz',"四元数姿态(w,x,y,z)","distance"]]
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
-            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram)
-            data.append(["end_link->camera:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram,eye_on_hand=eye_on_hand)
+            data.append(["end_link->camera:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],pose[6],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
-
         print ("\n"+tabulate(data,headers="firstrow") + "\n")
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
         test_result =  hand_calib._test_data(data[1:])
-        data = [['name','x','y','z','rx','ry','rz',"distance"]]
+        data = [['算法平均值测试','x','y','z','rx','ry','rz',"距离"]]
         for d in test_result:
             data.append(d)
         print(tabulate(data,headers="firstrow"))

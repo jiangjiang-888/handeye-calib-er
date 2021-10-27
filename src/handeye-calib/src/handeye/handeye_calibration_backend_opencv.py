@@ -153,9 +153,11 @@ class HandeyeCalibrationBackendOpenCV(object):
         # end_link->marker or end_link->camera
         result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
         (rx, ry, rz) = [math.degrees(float(i)) for i in tfs.euler.mat2euler(hand_camera_rot)]
+        (qx, qy, qz , qw) = [float(i) for i in tfs.quaternions.mat2quat(hand_camera_rot)]
+        # (qx, qy, qz qw) = [float(i) for i in tfs.euler.euler2quat(rx,ry,rz)]
         (hctx, hcty, hctz) = [float(i) for i in hand_camera_tr]
         
-        final_pose = [[algorithm,'x','y','z','rx','ry','rz',"距离"]]
+        final_pose = [[algorithm,'x','y','z','rx','ry','rz',"四元数姿态(w,x,y,z)","距离"]]
         for i in range(len(samples)):
             # base_link->end_link
             pose1 = tfs.affines.compose(np.squeeze(hand_world_tr[i]), hand_world_rot[i], [1, 1, 1])
@@ -167,10 +169,13 @@ class HandeyeCalibrationBackendOpenCV(object):
             temp = np.dot(temp,pose2)
             tr = temp[0:3,3:4].T[0]
             rot =tfs.euler.mat2euler(temp[0:3,0:3]) 
+            quat = tfs.quaternions.mat2quat(temp[0:3,0:3])
+            # quat = [float(i) for i in tfs.euler.euler2quat(rot[0],rot[1],rot[2])]
+
             if eye_on_hand:
-                final_pose.append(["base_link->marker"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
+                final_pose.append(["base_link->marker"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],[quat[0],quat[1],quat[2],quat[3]],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
             else:
-                final_pose.append(["base_link->camera"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
+                final_pose.append(["base_link->camera"+str(i),tr[0],tr[1],tr[2],rot[0],rot[1],rot[2],[quat[0],quat[1],quat[2],quat[3]],HandeyeCalibrationBackendOpenCV._distance(tr[0],tr[1],tr[2])])
                 
 
         test_result = HandeyeCalibrationBackendOpenCV._test_data(final_pose[1:])
@@ -178,5 +183,5 @@ class HandeyeCalibrationBackendOpenCV(object):
         final_pose.append(test_result[1])
         final_pose.append(test_result[2])
 
-        result_tuple = (hctx, hcty, hctz,rx,ry,rz),final_pose
+        result_tuple = (hctx, hcty, hctz,rx,ry,rz,[qx, qy, qz , qw]),final_pose
         return result_tuple

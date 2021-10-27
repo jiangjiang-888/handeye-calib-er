@@ -45,10 +45,10 @@ def calculate(samples,hand_calib):
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
-        data =  [['算法','x','y','z','rx','ry','rz',"距离"]]
+        data =  [['算法','x','y','z','rx','ry','rz',"四元数姿态(w,x,y,z)","距离"]]
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram,eye_on_hand=False)
-            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],pose[6],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
 
         print ("\n"+tabulate(data,headers="firstrow") + "\n")
@@ -60,7 +60,6 @@ def calculate(samples,hand_calib):
             data.append(d)
         print(tabulate(data,headers="firstrow"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
-
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             print(tabulate(esti_pose[algoram],headers="firstrow"))
             save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")

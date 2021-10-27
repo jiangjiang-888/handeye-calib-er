@@ -67,26 +67,28 @@ if __name__ == '__main__':
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
-        data =  [['算法','x','y','z','rx','ry','rz',"距离"]]
+        data =  [['算法','x','y','z','rx','ry','rz',"四元数姿态(w,x,y,z)","距离"]]
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             pose,final_pose = hand_calib.compute_calibration(samples,algorithm=algoram,eye_on_hand=False)
-            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],hand_calib._distance(pose[0],pose[1],pose[2])])
+            data.append(["end_link->marker:"+algoram,pose[0],pose[1],pose[2],pose[3],pose[4],pose[5],pose[6],hand_calib._distance(pose[0],pose[1],pose[2])])
             esti_pose[algoram] = final_pose
-        
+        # 打印各个算法结果
         print(str("\n"+tabulate(data,headers="firstrow") + "\n"))
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
 
+        # 测试算法平均值
         test_result =  hand_calib._test_data(data[1:])
-        data = [['名字','x','y','z','rx','ry','rz',"距离"]]
+        data = [['算法平均值测试','x','y','z','rx','ry','rz',"距离"]]
         for d in test_result:
             data.append(d)
         print(tabulate(data,headers="firstrow"))
+
+        # 打印各个点在各个算法下的坐标
         save_data  += str(  "\n"+tabulate(data,headers="firstrow") + "\n")
-        
         for algoram in hand_calib.AVAILABLE_ALGORITHMS:
             print(tabulate(esti_pose[algoram],headers="firstrow"))
             save_data  += str(  "\n"+tabulate(esti_pose[algoram],headers="firstrow") + "\n")
             
-        if result_path is not None:
-            file_operate.save_file(result_path,save_data)
-            rospy.loginfo("Save result to  "+str(result_path))
+        # if result_path is not None:
+        #     file_operate.save_file(result_path,save_data)
+        #     rospy.loginfo("Save result to  "+str(result_path))
