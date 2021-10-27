@@ -257,6 +257,42 @@ Park                          x             y             z           rx        
    > 眼在手上标定结果验证：由于标定过程中标定板是没有发生移动的，所以我们通过机械臂的末端位置、标定结果（手眼矩阵）、标记物在相机中的位姿即可计算出标定板在机器人基坐标系下的位姿，如果标定结果准确该位姿应该是没有变化的。所以可以比较最终数据的波动情况来判定标定结果的好坏。
 
 
+### 3.3手眼标定结果测试
+
+#### 3.3.1 眼在手外测试
+
+做完手眼标定，我们可以通过测试程序进行手眼标定结果的测试了，小鱼准备好的测试launch文件为`src/handeye-calib/launch/test/test_hand_to_eye_calib.launch`,同样运行测试之前请配置下launch文件。
+
+```
+    <arg   name="base_link"   default="/base_link" />
+    <arg   name="end_link"   default="/link7_name" />
+
+    <arg   name="base_link2camera_link" default="{'t':[0,0,0],'r':[0,0,0,0]}" />
+    <arg   name="camera_link"   default="/camera_frame" />
+    <arg   name="marker_link"   default="/aruco_marker_frame"/>
+```
+一共需要配置的参数有5个
+
+- base_link， 机械臂基座tf名称
+- end_link，机械臂末端坐标名称
+- base_link2camera_link，机械臂基座和相机之间的位姿关系，手眼标定结果给出，t代表平移单位m，r代表旋转，四元数形式,顺序为qx,qy,qz,qw
+- camera_link，aruco中的camera的frame id配置名字，用小鱼的aruco文件无需修改，不清楚请运行aruco识别程序，使用tf查看
+- marker_link，aruco中marker的frame_id,同上
+
+配置完成后确保机械臂启动了，aruco识别程序启动了。
+
+使用下面的指令运行
+
+```
+source devel/setup.bash
+roslaunch handeye-calib test_hand_to_eye_calib.launch
+```
+
+程序运行基输出实时的base_link和aruco_marker_frame之间的关系.
+
+```
+result:/base_link->/aruco_marker_frame, [0.0, 0.0, 2.0],[0.0, 0.0, 0.0, 1.0]
+```
 
 ## 4.其他
 
