@@ -32,7 +32,7 @@ if __name__ == '__main__':
     camera_link = rospy.get_param("/test_hand_on_eye/camera_link")
     marker_link = rospy.get_param("/test_hand_on_eye/marker_link")
 
-    end_link2camera_link = rospy.get_param("/test_hand_on_eye/base_link2camera_link")
+    end_link2camera_link = rospy.get_param("/test_hand_on_eye/end_link2camera_link")
     end_link2camera_link = json.loads(end_link2camera_link.replace("'",'"'))
 
     listener = tf.TransformListener()
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         try:
             (trans2,rot2) = end_link2camera_link['t'], end_link2camera_link['r']
             br.sendTransform(trans2,rot2,rospy.Time.now(),end_link,camera_link)
-            
+
             (trans1,rot1) = listener.lookupTransform(base_link,marker_link, rospy.Time(0))
             print("result:%s->%s, %s,%s" % (base_link,marker_link,trans1,rot1))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):

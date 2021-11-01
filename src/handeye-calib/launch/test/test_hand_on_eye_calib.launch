@@ -8,10 +8,10 @@
     <arg   name="camera_link"   default="/camera_frame" />
     <arg   name="marker_link"   default="/aruco_marker_frame"/>
 
-    <node pkg="handeye-calib" type="test_hand_to_eye.py" name="test_hand_to_eye" output="screen" >
+    <node pkg="handeye-calib" type="test_hand_on_eye.py" name="test_hand_on_eye" output="screen" >
          <param name="base_link" value="$(arg base_link)" />
          <param name="end_link" value="$(arg end_link)" />
-         <param name="base_link2camera_link" value="$(arg base_link2camera_link)" />
+         <param name="end_link2camera_link" value="$(arg end_link2camera_link)" />
          <param name="camera_link" value="$(arg camera_link)" />
          <param name="marker_link" value="$(arg marker_link)" />
     </node>
