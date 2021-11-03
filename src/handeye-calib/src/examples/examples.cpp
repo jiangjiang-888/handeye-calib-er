@@ -12,9 +12,6 @@ tf::StampedTransform getTransform(const tf::TransformListener& listener){
     return transform;
 }
 
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
-
 int main(int argc, char** argv){
   ros::init(argc, argv, "my_tf_listener");
   tf::TransformListener listener;
