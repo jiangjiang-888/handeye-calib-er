@@ -41,7 +41,7 @@ def get_csv_from_sample(samples):
     return data
 
 
-def calculate(samples,hand_calib,eye_on_hand=False):
+def calculate(samples,hand_calib,eye_on_hand=True):
     esti_pose = {}
     save_data = ""
     if len(samples) > 2:
@@ -108,7 +108,7 @@ if __name__ == '__main__':
                 print(temp_sample)
 
         elif command == 'c':
-            calculate(samples,hand_calib)
+            calculate(samples,hand_calib,True)
 
         elif command == 'q':
             break
@@ -117,4 +117,4 @@ if __name__ == '__main__':
             print(get_csv_from_sample(samples))
 
         elif command == 's':
-            save(calculate(samples,hand_calib)+"\n原始数据 :\n\n"+get_csv_from_sample(samples))
+            save(calculate(samples,hand_calib,True)+"\n原始数据 :\n\n"+get_csv_from_sample(samples))
