@@ -44,7 +44,7 @@ if __name__ == '__main__':
         try:
             (trans2,rot2) = end_link2camera_link['t'], end_link2camera_link['r']
             br.sendTransform(trans2,rot2,rospy.Time.now(),camera_link,end_link)
-            
+            count += 1
             if count>20:
                 (trans1,rot1) = listener.lookupTransform(base_link,marker_link, rospy.Time(0))
                 print("result:%s->%s, %s,%s" % (base_link,marker_link,trans1,rot1))
