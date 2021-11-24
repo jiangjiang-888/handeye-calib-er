@@ -38,14 +38,17 @@ if __name__ == '__main__':
     listener = tf.TransformListener()
     br = tf.TransformBroadcaster()  
 
-    rate = rospy.Rate(1.0)
+    rate = rospy.Rate(20.0)
+    count = 0
     while not rospy.is_shutdown():
         try:
             (trans2,rot2) = end_link2camera_link['t'], end_link2camera_link['r']
-            br.sendTransform(trans2,rot2,rospy.Time.now(),end_link,camera_link)
-
-            (trans1,rot1) = listener.lookupTransform(base_link,marker_link, rospy.Time(0))
-            print("result:%s->%s, %s,%s" % (base_link,marker_link,trans1,rot1))
+            br.sendTransform(trans2,rot2,rospy.Time.now(),camera_link,end_link)
+            
+            if count>20:
+                (trans1,rot1) = listener.lookupTransform(base_link,marker_link, rospy.Time(0))
+                print("result:%s->%s, %s,%s" % (base_link,marker_link,trans1,rot1))
+                count = 0
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
