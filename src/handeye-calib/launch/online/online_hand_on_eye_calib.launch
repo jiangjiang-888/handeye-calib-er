@@ -4,8 +4,8 @@
     <!-- The arm tool Pose Topic,Use ros geometry_msgs::Pose-->
     <arg   name="arm_pose_topic"   default="/arm_pose" />
 
-    <arg   name="base_link"   default="/base_link" />
-    <arg   name="end_link"   default="/link7" />
+    <arg   name="base_link"   default="/base" />
+    <arg   name="end_link"   default="/link6_R" />
 
     <node pkg="handeye-calib" type="online_hand_on_eye_calib.py" name="online_hand_on_eye_calib" output="screen" >
          <param name="arm_pose_topic" value="$(arg arm_pose_topic)" />
