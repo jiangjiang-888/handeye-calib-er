@@ -4,7 +4,7 @@
     <arg   name="base_link"   default="/base" />
     <arg   name="end_link"   default="/link6_R" />
 
-    <arg   name="base_link2camera_link" default="{'t':[-0.132928 ,-0.0327004,0.563993],'r':[-0.986980947,0.092418524,0.044122771,0.091239526]}" />
+    <arg   name="base_link2camera_link" default="{'t':[-0.108712  ,  -0.0384386  , 0.549091],'r':[ -0.76817245 , 0.0733952 , -0.01051461, 0.63593528 ]}" />
     <arg   name="camera_link"   default="/camera_frame" />
     <arg   name="marker_link"   default="/aruco_marker_frame"/>
 
