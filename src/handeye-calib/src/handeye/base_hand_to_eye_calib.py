@@ -10,11 +10,13 @@ import transforms3d as tfs
 from tabulate import tabulate
 from handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 
+#获取齐次矩阵
 def get_matrix_eular_radu(x,y,z,rx,ry,rz):
     rmat = tfs.euler.euler2mat(math.radians(rx),math.radians(ry),math.radians(rz))
     rmat = tfs.affines.compose(np.squeeze(np.asarray((x,y,z))), rmat, [1, 1, 1])
     return rmat
 
+#齐次矩阵转为欧拉角
 def matrix_to_eular(m):
     rx,ry,rz = tfs.euler.mat2euler(m[0:3,0:3])
     pos = np.squeeze(m[0:3,3:4])
