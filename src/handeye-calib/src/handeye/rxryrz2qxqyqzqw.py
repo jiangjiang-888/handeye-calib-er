@@ -2,8 +2,10 @@ import transforms3d as tfs
 import numpy as np
 
 # 假设你有一个位移向量和欧拉角
-translation = [-0.0306808 , -0.0679145 ,  0.591702]  # x, y, z
-euler_angles = [ -2.9596  ,  0.143867  ,   0.165729 ]  # rx, ry, rz
+translation = [-0.151082  ,  -0.0261163   , 0.55596    ]  # x, y, z
+euler_angles = [  -0.706521 , -0.157648   ,  0.338865 ]  # rx, ry, rz
+# translation = [-0.0306808 , -0.0679145 ,  0.591702]  # x, y, z
+# euler_angles = [ -2.9596  ,  0.143867  ,   0.165729 ]  # rx, ry, rz
 
 # 将欧拉角转换为旋转矩阵
 rotation_matrix = tfs.euler.euler2mat(euler_angles[0], euler_angles[1], euler_angles[2], 'sxyz')

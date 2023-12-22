@@ -4,7 +4,11 @@
     <arg   name="base_link"   default="/base" />
     <arg   name="end_link"   default="/link6_R" />
 
-    <arg   name="base_link2camera_link" default="{'t':[-0.110433 ,   -0.0468574  , 0.586802],'r':[ -0.9927202740286575, 0.1134888959867052, 0.026389168379359812, 0.030501472299411907]}" />
+    <arg   name="base_link2camera_link" default="{'t':[-0.101877    -0.0195084   0.582601 ],'r':[  -0.9968146003584174, -0.05618772762782992, 0.005713496577981383, 0.05631116881367886]}" />
+    
+    <!-- 精度还行 -->
+    <!-- <arg   name="base_link2camera_link" default="{'t':[-0.110433 ,   -0.0468574  , 0.586802],'r':[ -0.9927202740286575, 0.1134888959867052, 0.026389168379359812, 0.030501472299411907]}" /> -->
+   
     <arg   name="camera_link"   default="/camera_frame" />
     <arg   name="marker_link"   default="/aruco_marker_frame"/>
 
