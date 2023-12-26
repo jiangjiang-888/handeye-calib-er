@@ -27,6 +27,6 @@ if __name__ == '__main__':
     image_subscriber = rospy.Subscriber('/camera/rgb/image_raw', Image, image_callback)
     
     # 创建一个发布器来发布翻转后的图像
-    flipped_image_publisher = rospy.Publisher('/flip_image_node/flipped_image', Image, queue_size=10)
+    flipped_image_publisher = rospy.Publisher('/flip_image_raw/flipped_image', Image, queue_size=10)
     
     rospy.spin()
