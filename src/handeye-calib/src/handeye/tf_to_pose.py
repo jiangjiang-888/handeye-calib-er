@@ -44,7 +44,7 @@ if __name__ == '__main__':
             pose.pose.orientation.w = rot1[3]
 
             
-            print(get_pose_from_ros(pose=pose))
+            print(get_pose_from_ros(pose=pose.pose))
             
             
             
