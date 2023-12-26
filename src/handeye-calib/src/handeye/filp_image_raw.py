@@ -21,7 +21,7 @@ def image_callback(msg):
         print(e)
 
 if __name__ == '__main__':
-    rospy.init_node('flip_image_node', anonymous=True)
+    rospy.init_node('flip_image_raw', anonymous=True)
     
     # 订阅原始图像话题
     image_subscriber = rospy.Subscriber('/camera/rgb/image_raw', Image, image_callback)
