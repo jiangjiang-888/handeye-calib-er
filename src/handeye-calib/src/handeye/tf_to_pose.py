@@ -11,7 +11,9 @@ import transforms3d as tfs
 import geometry_msgs.msg
 import numpy as np
 import transforms3d as tfs
-  
+
+
+from online_hand_to_eye_calib import get_pose_from_ros
 
 
 
@@ -41,6 +43,12 @@ if __name__ == '__main__':
             pose.pose.orientation.z = rot1[2]
             pose.pose.orientation.w = rot1[3]
 
+            
+            print(get_pose_from_ros(pose=pose))
+            
+            
+            
+            
             pub.publish(pose)
             # print("base_link->end_link",trans1,rot1)
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
