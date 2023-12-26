@@ -8,6 +8,12 @@
     <arg name="ref_frame"       default=""/>  
     <arg name="corner_refinement" default="LINES" /> 
     
+
+
+    <node pkg="handeye-calib" type="flip_image_raw.py" name="image_flip_node" output="screen">
+        <remap from="/camera/rgb/image_raw" to="/camera/rgb/image_raw_flipped" />
+    </node>
+
     <node pkg="aruco_ros" type="single" name="aruco_single">
         <remap from="/camera_info" to="/camera/rgb/camera_info" />
         <remap from="/image" to="/camera/rgb/image_raw" />
