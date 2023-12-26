@@ -10,13 +10,13 @@
     
 
 
-    <node pkg="handeye-calib" type="flip_image_raw.py" name="flip_image_raw" output="screen">
+    <node pkg="handeye-calib" type="flip_image_raw.py" name="flip_image_node" output="screen">
         <!-- <remap from="/camera/rgb/image_raw" to="/camera/rgb/image_raw_flipped" /> -->
     </node>
 
     <node pkg="aruco_ros" type="single" name="aruco_single">
         <remap from="/camera_info" to="/camera/rgb/camera_info" />
-        <remap from="/image" to="/camera/rgb/image_raw_flipped" />
+        <remap from="/image" to="/flip_image_node/flipped_image" />
         <param name="image_is_rectified" value="True"/>
         <param name="marker_size"        value="$(arg markerSize)"/>
         <param name="marker_id"          value="$(arg markerId)"/>

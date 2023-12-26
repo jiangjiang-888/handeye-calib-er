@@ -21,12 +21,12 @@ def image_callback(msg):
         print(e)
 
 if __name__ == '__main__':
-    rospy.init_node('image_flip_node', anonymous=True)
+    rospy.init_node('flip_image_node', anonymous=True)
     
     # 订阅原始图像话题
     image_subscriber = rospy.Subscriber('/camera/rgb/image_raw', Image, image_callback)
     
     # 创建一个发布器来发布翻转后的图像
-    flipped_image_publisher = rospy.Publisher('/camera/rgb/flipped_image', Image, queue_size=10)
+    flipped_image_publisher = rospy.Publisher('/flip_image_node/flipped_image', Image, queue_size=10)
     
     rospy.spin()
