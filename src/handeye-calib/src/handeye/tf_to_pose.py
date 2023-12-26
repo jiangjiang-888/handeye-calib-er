@@ -47,9 +47,9 @@ if __name__ == '__main__':
             print(get_pose_from_ros(pose=pose.pose))
             
             
-            
-            
+
             pub.publish(pose)
+            pub.publish(get_pose_from_ros(pose=pose.pose))
             # print("base_link->end_link",trans1,rot1)
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
