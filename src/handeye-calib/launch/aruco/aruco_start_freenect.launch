@@ -10,7 +10,7 @@
     
 
 
-    <node pkg="handeye-calib"  type="flip_image_raw.py" name="flip_image_raw" output="screen">
+    <node pkg="handeye-calib" type="flip_image_raw.py" name="flip_image_raw" output="screen">
         <!-- <remap from="/camera/rgb/image_raw" to="/camera/rgb/image_raw_flipped" /> -->
     </node>
 
