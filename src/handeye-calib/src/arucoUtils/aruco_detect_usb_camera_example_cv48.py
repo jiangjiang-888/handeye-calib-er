@@ -5,11 +5,11 @@ import cv2.aruco as aruco
 import math
 #opencv-contrib-python  4.8.0
 
-dist=np.array(([[-0.012628 ,-0.019616 ,-0.000472 ,-0.007808, 0.000000]]))
+dist=np.array(([[0.004933 ,-0.023867, 0.003539, -0.007483, 0.000000]]))
 
-mtx=np.array([[1100.208226 ,0.000000, 938.263503],
-        [0.000000 ,1089.688288 ,533.024118],
-        [0.000000 ,0.000000 ,1.000000]])
+mtx=np.array([[1139.693907, 0.000000, 945.142515],
+[0.000000, 1132.743493 ,534.283287],
+[0.000000 ,0.000000 ,1.00000]])
 
 cap = cv2.VideoCapture(1)
 # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
@@ -30,13 +30,13 @@ while True:
     # print(h1, w1) #1920 1080
     
     # 读取摄像头画面
-    # 纠正畸变
-    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (h1, w1), 1, (h1, w1))
-    dst1 = cv2.undistort(frame, mtx, dist, None, new_camera_mtx)
+    # 纠正畸变 
+    # new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (h1, w1), 1, (h1, w1))
+    # dst1 = cv2.undistort(frame, mtx, dist, None, new_camera_mtx)
         
     # x, y, w1, h1 = roi
     # dst1 = dst1[ x:x + w1,y:y + h1]
-    frame=dst1
+    # frame=dst1
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
