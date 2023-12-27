@@ -1,5 +1,5 @@
 <launch>
-    <arg name="camera_info_url"  default="file:///home/ros/.ros/camera_info/ost.yaml"/>
+    <arg name="camera_info_url"  default="file:///home/robot/.ros/camera_info/ost.yaml"/>
     <arg name="video_device"     default="/dev/video0"/>
     <arg name="image_width"      default="1920"/>
     <arg name="image_height"     default="1080"/>
