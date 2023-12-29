@@ -86,8 +86,6 @@ while True:
         # filename = str(time.time())[:10] + ".jpg"
         # cv2.imwrite(filename, frame)
 '''
-
-
 while True:
     ret, frame = cap.read()
     
