@@ -4,11 +4,12 @@
     <arg   name="base_link"   default="/base" />
     <arg   name="end_link"   default="/link6_R" />
 
-    <arg   name="base_link2camera_link" default="{'t':[-0.0989084 ,  -0.0085336  , 0.565238  ],'r':[   -0.9975386203793729, -0.0031646948898335636, 0.06319527110290796, 0.03021660583357326]}" />
+    <!-- kinect-->
+    <!-- <arg   name="base_link2camera_link" default="{'t':[-0.0989084 ,  -0.0085336  , 0.565238  ],'r':[   -0.9975386203793729, -0.0031646948898335636, 0.06319527110290796, 0.03021660583357326]}" /> -->
     
-    <!-- 精度还行 -->
-    <!-- <arg   name="base_link2camera_link" default="{'t':[-0.110433 ,   -0.0468574  , 0.586802],'r':[ -0.9927202740286575, 0.1134888959867052, 0.026389168379359812, 0.030501472299411907]}" /> -->
-   
+    <!-- ubuntu usb_cam-->
+    <arg   name="base_link2camera_link" default="{'t':[-0.125796  ,   0.0305877 ,  0.546227     ],'r':[ 0.15192925503660906, -0.9875980375216189, 0.027663476853261607,0.02832577970432306]}" />
+    
     <arg   name="camera_link"   default="/camera_frame" />
     <arg   name="marker_link"   default="/aruco_marker_frame"/>
 

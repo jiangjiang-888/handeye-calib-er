@@ -4,7 +4,7 @@
     <arg name="image_width"      default="1920"/>
     <arg name="image_height"     default="1080"/>
 
-    <arg name="markerId"        default="995"/>
+    <arg name="markerId"        default="0"/>
     <arg name="markerSize"      default="0.030"/>    
     <arg name="eye"             default="left"/>
     <arg name="marker_frame"    default="aruco_marker_frame"/>

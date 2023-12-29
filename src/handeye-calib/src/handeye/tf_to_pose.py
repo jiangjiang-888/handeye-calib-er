@@ -26,9 +26,9 @@ if __name__ == '__main__':
     rospy.loginfo("获取话题和link配置从参数服务器，要发布的话题是%s 从机械臂的%s->%s之间的变换关系" % (str(arm_pose_topic),str(base_link),str(end_link)))
 
     listener = tf.TransformListener()
-    # pub = rospy.Publisher(str(arm_pose_topic),PoseStamped,queue_size=10)
-    from std_msgs.msg import String
-    pub = rospy.Publisher(str(arm_pose_topic),String,queue_size=10)
+    pub = rospy.Publisher(str(arm_pose_topic),PoseStamped,queue_size=10)
+    # from std_msgs.msg import String
+    # pub = rospy.Publisher(str(arm_pose_topic),String,queue_size=10)
 
     rate = rospy.Rate(1.0)
     while not rospy.is_shutdown():
@@ -50,8 +50,8 @@ if __name__ == '__main__':
             
             
 
-            # pub.publish(pose)
-            pub.publish(str(get_pose_from_ros(pose=pose.pose)))
+            pub.publish(pose)
+            # pub.publish(str(get_pose_from_ros(pose=pose.pose)))
             # print("base_link->end_link",trans1,rot1)
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
