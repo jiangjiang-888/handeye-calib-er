@@ -5,11 +5,11 @@ import cv2.aruco as aruco
 import math
 #opencv-contrib-python  4.8.0
 
-dist=np.array(([[0.004933 ,-0.023867, 0.003539, -0.007483, 0.000000]]))
+dist=np.array(([[0.019367, -0.052131, 0.003435, -0.000312, 0.000000]]))
 
-mtx=np.array([[1139.693907, 0.000000, 945.142515],
-[0.000000, 1132.743493 ,534.283287],
-[0.000000 ,0.000000 ,1.00000]])
+mtx=np.array([[1136.6399 ,    0.     ,  959.06707],
+            [0.     , 1136.88727,  539.12713],
+            [0.     ,    0.     ,    1.     ]])
 
 cap = cv2.VideoCapture(1)
 # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
@@ -23,20 +23,22 @@ parameters =  aruco.DetectorParameters()
 detector = aruco.ArucoDetector(aruco_dict,parameters)
 global  rvec, tvec
 
+
+
 while True:
     ret, frame = cap.read()
 
-    h1, w1 = frame.shape[:2]  
-    # print(h1, w1) #1920 1080
+    h1, w1= frame.shape[:2]  
+    # print(h1, w1) #1080 1920
     
     # 读取摄像头画面
     # 纠正畸变 
-    # new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (h1, w1), 1, (h1, w1))
-    # dst1 = cv2.undistort(frame, mtx, dist, None, new_camera_mtx)
+    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w1,h1), 1, (w1,h1))
+    dst1 = cv2.undistort(frame, mtx, dist, None, new_camera_mtx)
         
-    # x, y, w1, h1 = roi
-    # dst1 = dst1[ x:x + w1,y:y + h1]
-    # frame=dst1
+    x, y, w1, h1 = roi
+    dst1 = dst1[y:y + h1, x:x + w1]
+    frame=dst1
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
@@ -80,7 +82,7 @@ while True:
     if key == ord(' '):   # 按空格键保存
         tvec_str = ', '.join(map(str, tvec[0, :, :].ravel()))
         rvec_str = ', '.join(map(str, rvec[0, :, :].ravel()))
-        print(tvec_str,',', rvec_str)
+        print('eye,',tvec_str,',', rvec_str)
         # filename = str(time.time())[:10] + ".jpg"
         # cv2.imwrite(filename, frame)
 '''
